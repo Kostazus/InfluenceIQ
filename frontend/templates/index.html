@@ -254,7 +254,7 @@ select {
 .sw input { display: none; }
 .sw-track { position: absolute; inset: 0; border-radius: 99px; background: #e5e5ea; cursor: pointer; transition: all .25s; }
 .sw-track::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: all .25s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
-.sw input:checked ~ .sw-track { background: #34c759; }
+.sw input:checked ~ .sw-track { background: #0071e3; }
 .sw input:checked ~ .sw-track::before { transform: translateX(18px); }
 
 /* ── PAGER ── */
@@ -435,6 +435,14 @@ select {
 .spec-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 14px; white-space: nowrap; }
 .spec-val { font-size: 22px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* Tech specs inline-style grid (replaces inline styles for responsiveness) */
+.tsg { display: grid; grid-template-columns: repeat(3, 1fr); }
+.tsg.tsg-top { border-bottom: 1px solid rgba(255,255,255,.1); }
+.tsc { padding: 32px 36px; border-right: 1px solid rgba(255,255,255,.1); min-width: 0; }
+.tsc:last-child { border-right: none; }
+.tsc-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 14px; }
+.tsc-val { font-size: 24px; font-weight: 700; color: #fff; }
+
 /* ── SETTINGS MODAL ── */
 .sov { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9000; opacity: 0; pointer-events: none; transition: opacity .3s; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .sov.on { opacity: 1; pointer-events: all; }
@@ -524,7 +532,7 @@ select {
 .price-toggle { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,0,0,.06); border-radius: 980px; padding: 4px; margin-top: 18px; }
 .pt { padding: 7px 18px; border-radius: 980px; font-size: 13px; font-weight: 500; color: var(--t2); border: none; background: transparent; cursor: pointer; font-family: inherit; transition: all .2s; }
 .pt.on { background: var(--white); color: var(--t1); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
-.save-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: rgba(52,199,89,.1); color: #1a7a35; border-radius: 980px; margin-left: 6px; }
+.save-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: rgba(0,113,227,.1); color: #0071e3; border-radius: 980px; margin-left: 6px; }
 .pamt-val { font-size: 38px; font-weight: 800; letter-spacing: -.03em; }
 
 /* Footer */
@@ -540,6 +548,154 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 .footer-legal { display: flex; gap: 16px; }
 .footer-legal a { font-size: 12px; color: var(--t3); text-decoration: none; cursor: pointer; }
 .footer-legal a:hover { color: var(--t1); }
+
+/* ── RESPONSIVE ── */
+
+/* Tablet (≤1024px) */
+@media (max-width: 1024px) {
+  .nav-links { display: none; }
+  .mockup-body { grid-template-columns: 1fr; }
+  .recent-col { display: none; }
+  .g3 { grid-template-columns: 1fr 1fr; }
+  .g4 { grid-template-columns: 1fr 1fr; }
+  .specs-grid { border-radius: 14px; }
+  .spec-cell { padding: 20px 22px; }
+  .footer-grid { grid-template-columns: repeat(3, 1fr); }
+  .res-grid { grid-template-columns: 1fr; }
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+  :root { --nav-h: 48px; }
+
+  /* Nav */
+  .nav { padding: 0 16px; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex !important; }
+
+  /* Typography */
+  .hero-h  { font-size: clamp(38px, 10vw, 58px); }
+  .section-h { font-size: clamp(32px, 9vw, 52px); }
+  .body-copy { font-size: 15px !important; }
+
+  /* Sections */
+  .section-inner, .section-inner-wide { padding: 0 16px; }
+  .sec-center { padding: 48px 0 32px; }
+  .sec-center-sm { padding: 40px 0 24px; }
+
+  /* Hero */
+  #page-home .section-inner { padding-top: 56px !important; }
+  .mockup-wrap { margin-top: 32px; border-radius: 10px; }
+  .mockup-body { grid-template-columns: 1fr; padding: 12px; gap: 10px; }
+  .stat-col { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .stat-box-val { font-size: 18px; }
+  .recent-col { display: none; }
+
+  /* Grids — all collapse to single column */
+  .g2, .g3 { grid-template-columns: 1fr !important; }
+  .g4 { grid-template-columns: 1fr 1fr !important; }
+  .inp-row { grid-template-columns: 1fr !important; }
+
+  /* Analyze section */
+  .res-grid { grid-template-columns: 1fr; }
+  .m3 { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .mbig { font-size: 18px; }
+
+  /* Specs */
+  .specs-row { grid-template-columns: 1fr; }
+  .spec-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); padding: 18px 20px; }
+  .spec-cell:last-child { border-bottom: none; }
+
+  /* Tech specs CSS-class grid */
+  .tsg { grid-template-columns: 1fr !important; }
+  .tsc { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,.1); padding: 20px 20px !important; }
+  .tsc:last-child { border-bottom: none; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  footer { padding: 36px 0 24px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
+
+  /* Campaigns */
+  .camp-stats { gap: 14px; flex-wrap: wrap; }
+  .camp-stat-val { font-size: 13px; }
+
+  /* Settings modal */
+  .smodal { border-radius: 16px 16px 0 0; max-height: 92vh; }
+  .sov { align-items: flex-end; padding: 0; }
+
+  /* Reports row */
+  .rep-row { gap: 10px; flex-wrap: wrap; }
+  .rep-row .btn-outline { flex-shrink: 0; }
+
+  /* Trust logos */
+  #page-home .section-inner > div:last-child { padding: 28px 0 40px; }
+  #page-home .section-inner > div:last-child > div { gap: 20px; }
+
+  /* Buttons */
+  .btn-dark, .btn-blue-pill, .btn-outline { padding: 12px 22px; font-size: 14px; }
+
+  /* Hero CTA row */
+  #page-home .section-inner > .fade-up > div[style*="gap:16px"] { gap: 10px; }
+
+  /* Pricing */
+  .price-toggle { flex-wrap: nowrap; }
+
+  /* Toast */
+  .toast { width: calc(100% - 32px); text-align: center; }
+
+  /* Pricing section padding tweak */
+  .g4 .price-card { padding: 18px; }
+}
+
+/* Small mobile (≤480px) */
+@media (max-width: 480px) {
+  .hero-h  { font-size: clamp(32px, 9.5vw, 46px); }
+  .section-h { font-size: clamp(28px, 8.5vw, 42px); }
+  .stat-col { grid-template-columns: 1fr 1fr; }
+  .stat-box:last-child { grid-column: 1 / -1; }
+  .g4 { grid-template-columns: 1fr !important; }
+  .m3 { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .feat-h { font-size: 19px; }
+  .dark-tabs { gap: 1px; }
+  .dark-tab { padding: 7px 12px; font-size: 12px; }
+  /* Campaign stats wrap on tiny screens */
+  .camp-stats { flex-direction: column; align-items: flex-start; gap: 8px; }
+  /* Reports wrap */
+  .rep-row { flex-wrap: wrap; }
+}
+
+/* Hamburger button (hidden on desktop) */
+.nav-hamburger {
+  display: none;
+  width: 34px; height: 34px;
+  border-radius: 50%; border: none;
+  background: transparent; cursor: pointer;
+  align-items: center; justify-content: center;
+  color: var(--t1); transition: background .15s;
+}
+.nav-hamburger:hover { background: rgba(0,0,0,.06); }
+
+/* Mobile nav menu */
+.nav-mobile {
+  display: none;
+  position: fixed; top: var(--nav-h); left: 0; right: 0;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 199; padding: 8px 0 12px;
+  flex-direction: column;
+}
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  display: block; padding: 12px 20px;
+  font-size: 15px; font-weight: 500; color: var(--t1);
+  text-decoration: none; cursor: pointer;
+  transition: background .15s;
+}
+.nav-mobile a:hover { background: rgba(0,0,0,.04); }
 </style>
 </head>
 <body>
@@ -568,8 +724,21 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <button class="nav-btn" onclick="openSettings()" title="Settings">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" title="Menu">
+      <svg id="hamburgerIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile nav menu -->
+<div class="nav-mobile" id="navMobile">
+  <a onclick="scrollTo('home');closeMobileNav()">Overview</a>
+  <a onclick="scrollTo('analyze');closeMobileNav()">Analyze</a>
+  <a onclick="scrollTo('insights');closeMobileNav()">Insights</a>
+  <a onclick="scrollTo('campaigns');closeMobileNav()">Campaigns</a>
+  <a onclick="scrollTo('reports');closeMobileNav()">Reports</a>
+  <a onclick="scrollTo('settings');closeMobileNav()">Settings</a>
+</div>
 
 <div id="app">
 
@@ -1081,33 +1250,15 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
         <h2 style="font-size:clamp(38px,5vw,64px);font-weight:700;letter-spacing:-.035em;line-height:1.04;color:#fff">Under the hood.</h2>
       </div>
       <div style="border:1px solid rgba(255,255,255,.12);border-radius:18px;overflow:hidden">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.1)">
-          <div style="padding:32px 36px;border-right:1px solid rgba(255,255,255,.1)">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Engine</div>
-            <div style="font-size:24px;font-weight:700;color:#fff;white-space:nowrap">InfluenceIQ v3</div>
-          </div>
-          <div style="padding:32px 36px;border-right:1px solid rgba(255,255,255,.1)">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Data Points</div>
-            <div style="font-size:24px;font-weight:700;color:#fff;white-space:nowrap">1.4B / day</div>
-          </div>
-          <div style="padding:32px 36px">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Platforms</div>
-            <div style="font-size:22px;font-weight:700;color:#fff;white-space:nowrap">TikTok · IG · YT · X · TG</div>
-          </div>
+        <div class="tsg tsg-top">
+          <div class="tsc"><div class="tsc-tag">Engine</div><div class="tsc-val">InfluenceIQ v3</div></div>
+          <div class="tsc"><div class="tsc-tag">Data Points</div><div class="tsc-val">1.4B / day</div></div>
+          <div class="tsc"><div class="tsc-tag">Platforms</div><div class="tsc-val" style="font-size:19px">TikTok · IG · YT · X · TG</div></div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr)">
-          <div style="padding:32px 36px;border-right:1px solid rgba(255,255,255,.1)">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Latency</div>
-            <div style="font-size:24px;font-weight:700;color:#fff;white-space:nowrap">&lt; 2.1s avg</div>
-          </div>
-          <div style="padding:32px 36px;border-right:1px solid rgba(255,255,255,.1)">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Accuracy</div>
-            <div style="font-size:24px;font-weight:700;color:#fff;white-space:nowrap">94.6%</div>
-          </div>
-          <div style="padding:32px 36px">
-            <div style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px">Uptime</div>
-            <div style="font-size:24px;font-weight:700;color:#fff;white-space:nowrap">99.99%</div>
-          </div>
+        <div class="tsg">
+          <div class="tsc"><div class="tsc-tag">Latency</div><div class="tsc-val">&lt; 2.1s avg</div></div>
+          <div class="tsc"><div class="tsc-tag">Accuracy</div><div class="tsc-val">94.6%</div></div>
+          <div class="tsc"><div class="tsc-tag">Uptime</div><div class="tsc-val">99.99%</div></div>
         </div>
       </div>
     </div>
@@ -1409,6 +1560,30 @@ function saveNotif(el) {
     }
   });
 })();
+
+/* ── MOBILE NAV ── */
+function toggleMobileNav() {
+  const menu = document.getElementById('navMobile');
+  const icon = document.getElementById('hamburgerIcon');
+  const open = menu.classList.toggle('open');
+  icon.innerHTML = open
+    ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+    : '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>';
+}
+function closeMobileNav() {
+  const menu = document.getElementById('navMobile');
+  const icon = document.getElementById('hamburgerIcon');
+  menu.classList.remove('open');
+  icon.innerHTML = '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>';
+}
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('navMobile');
+  const btn = document.getElementById('navHamburger');
+  if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+    closeMobileNav();
+  }
+});
 
 /* Init */
 document.addEventListener('DOMContentLoaded', () => {
