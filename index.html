@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfluenceIQ — AI-Powered Influencer Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── DESIGN TOKENS ─────────────────────────────────────────── */
+:root {
+  --blue:        #4F8CFF;
+  --blue-mid:    #5A97FF;
+  --blue-light:  #6EA8FF;
+  --blue-pale:   rgba(79,140,255,.10);
+
+  --bg:          #EDF1F7;
+  --bg2:         rgba(237,241,247,0.80);
+
+  /* Liquid Glass */
+  --glass:       rgba(255,255,255,0.52);
+  --glass-b:     rgba(255,255,255,0.68);
+  --glass-sh:    0 8px 40px rgba(79,140,255,.09), 0 1px 6px rgba(0,0,0,.05);
+  --glass-hov:   0 20px 56px rgba(79,140,255,.15), 0 4px 16px rgba(0,0,0,.07);
+
+  /* Text */
+  --t1: #18202e;
+  --t2: #556070;
+  --t3: #9ba8bc;
+
+  /* Radii */
+  --r-card:   26px;
+  --r-btn:    20px;
+  --r-input:  16px;
+  --r-side:   18px;
+
+  --nav-h:   64px;
+  --side-w:  220px;
+}
+
+/* ── BASE ──────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  overflow-y: scroll; /* always show scrollbar to prevent layout shift */
+}
+html::-webkit-scrollbar { width: 6px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb { background: rgba(79,140,255,.22); border-radius: 99px; }
+html::-webkit-scrollbar-thumb:hover { background: rgba(79,140,255,.42); }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Layered background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 8%,  rgba(79,140,255,.13) 0%, transparent 40%),
+    radial-gradient(circle at 8%  88%, rgba(110,168,255,.09) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.55) 0%, transparent 65%);
+}
+/* Noise grain */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: .55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+}
+
+/* ── GLASS MIXIN ───────────────────────────────────────────── */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(36px) saturate(1.85);
+  -webkit-backdrop-filter: blur(36px) saturate(1.85);
+  border: 1px solid var(--glass-b);
+  box-shadow: var(--glass-sh);
+}
+
+/* ── TOPNAV ────────────────────────────────────────────────── */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-h); z-index: 200;
+  display: flex; align-items: center; padding: 0 32px; gap: 0;
+  background: rgba(237,241,247,.78);
+  backdrop-filter: blur(36px) saturate(1.9);
+  -webkit-backdrop-filter: blur(36px) saturate(1.9);
+  border-bottom: none;
+  box-shadow: none;
+}
+.topnav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16.5px; font-weight: 750; color: var(--t1);
+  cursor: pointer; text-decoration: none; flex-shrink: 0;
+  user-select: none;
+}
+.logo-mark {
+  width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(145deg, var(--blue), var(--blue-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 14px rgba(79,140,255,.38), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.topnav-links {
+  display: flex; list-style: none; gap: 2px;
+  padding: 5px 6px;
+  border-radius: 20px;
+  border: 1px solid rgba(79,140,255,.18);
+  background: linear-gradient(145deg, rgba(79,140,255,.07), rgba(110,168,255,.04));
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.topnav-links li a {
+  display: block; padding: 7px 15px; border-radius: 12px;
+  font-size: 13.5px; font-weight: 500; color: var(--t2);
+  text-decoration: none; cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.topnav-links li a:hover { color: var(--t1); background: rgba(255,255,255,.55); }
+.topnav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+/* Bordered pill wrapper — reusable for logo & right group */
+.nav-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px 5px 6px;
+  border-radius: 20px;
+  border: 1px solid rgba(79,140,255,.18);
+  background: linear-gradient(145deg, rgba(79,140,255,.07), rgba(110,168,255,.04));
+  transition: border-color .2s, background .2s;
+}
+.nav-pill:hover {
+  border-color: rgba(79,140,255,.28);
+  background: linear-gradient(145deg, rgba(79,140,255,.11), rgba(110,168,255,.07));
+}
+/* Right pill (settings + avatar) slightly tighter padding */
+.nav-pill-right {
+  padding: 5px 6px;
+  gap: 6px;
+}
+
+.nav-icon-btn {
+  width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+  background: transparent; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--t2);
+  transition: all .18s; user-select: none;
+}
+.nav-icon-btn:hover { background: rgba(255,255,255,.65); transform: scale(1.06); border-radius: 10px; }
+.topnav-avatar {
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(145deg, var(--blue), var(--blue-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+  border: 2px solid rgba(255,255,255,.85);
+  box-shadow: 0 2px 10px rgba(79,140,255,.32);
+  position: relative; transition: transform .18s;
+}
+.topnav-avatar:hover { transform: scale(1.07); }
+.notif-dot {
+  position: absolute; top: -1px; right: -1px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #ef4444; border: 2px solid var(--bg);
+}
+
+/* ── APP SHELL ─────────────────────────────────────────────── */
+#app {
+  display: block;
+  min-height: 100vh;
+  padding-top: var(--nav-h);
+  position: relative; z-index: 1;
+}
+
+/* ── SIDEBAR ───────────────────────────────────────────────── */
+.sidebar {
+  width: var(--side-w);
+  position: fixed; top: var(--nav-h); left: 0; bottom: 0;
+  padding: 22px 12px 24px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: rgba(237,241,247,.62);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-right: 1px solid rgba(255,255,255,.52);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100;
+}
+.sidebar::-webkit-scrollbar { width: 0; }
+
+.nav-group {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 6px;
+  border-radius: 22px;
+  border: 1px solid rgba(79,140,255,.18);
+  background: linear-gradient(145deg, rgba(79,140,255,.07), rgba(110,168,255,.04));
+  flex: 1;          /* растягивается до Upgrade Plan */
+  margin-bottom: 10px; /* зазор между группой и Upgrade Plan */
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 13px; border-radius: 14px;
+  font-size: 13.5px; font-weight: 500; color: var(--t2);
+  cursor: pointer; user-select: none;
+  transition: all .22s cubic-bezier(.4,0,.2,1);
+  position: relative; white-space: nowrap;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,.55);
+  color: var(--t1);
+}
+.nav-item.active {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255,255,255,.95);
+  color: var(--blue);
+  font-weight: 640;
+  box-shadow: 0 2px 18px rgba(79,140,255,.14), 0 1px 5px rgba(0,0,0,.05);
+}
+.nav-item.active .nav-ic { opacity: 1; }
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: -6px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 20px;
+  background: linear-gradient(180deg, var(--blue), var(--blue-light));
+  border-radius: 0 4px 4px 0;
+}
+.nav-ic { font-size: 16px; width: 20px; text-align: center; opacity: .65; }
+
+.sidebar-spacer { flex: 1; min-height: 16px; }
+
+.upgrade-card {
+  padding: 16px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(79,140,255,.11), rgba(110,168,255,.07));
+  border: 1px solid rgba(79,140,255,.18);
+}
+.upgrade-card h4 { font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+.upgrade-card p  { font-size: 11.5px; color: var(--t2); line-height: 1.5; margin-bottom: 12px; }
+
+/* ── MAIN ──────────────────────────────────────────────────── */
+.main {
+  margin-left: var(--side-w);
+  padding: 0;
+  min-height: calc(100vh - var(--nav-h));
+}
+
+/* ── SECTIONS (scrollable) ─────────────────────────────────── */
+.page {
+  padding: 40px 36px 60px;
+  border-bottom: 1px solid rgba(255,255,255,.35);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1);
+}
+.page.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page:last-child { border-bottom: none; }
+
+/* Section label */
+.section-label {
+  font-size: 10.5px; font-weight: 700; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 22px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: rgba(255,255,255,.45);
+}
+
+@keyframes pgIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CARDS ─────────────────────────────────────────────────── */
+.card {
+  background: var(--glass);
+  backdrop-filter: blur(36px) saturate(1.85);
+  -webkit-backdrop-filter: blur(36px) saturate(1.85);
+  border: 1px solid var(--glass-b);
+  border-radius: var(--r-card);
+  box-shadow: var(--glass-sh);
+  transition: transform .26s cubic-bezier(.4,0,.2,1), box-shadow .26s;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 50%);
+  border-radius: inherit;
+}
+.card > * { position: relative; z-index: 1; }
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glass-hov);
+}
+
+/* Inner glass surface (sub-card) */
+.inner-glass {
+  background: rgba(255,255,255,.48);
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 18px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── BUTTONS ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 7px; border: none; cursor: pointer; font-family: inherit;
+  font-weight: 600; transition: all .22s cubic-bezier(.4,0,.2,1);
+  position: relative; overflow: hidden; white-space: nowrap;
+}
+
+/* Shine sweep */
+.btn::after {
+  content: '';
+  position: absolute; top: -50%; left: -70%;
+  width: 55%; height: 200%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.32), transparent);
+  transform: skewX(-22deg);
+  transition: left .55s ease;
+  pointer-events: none;
+}
+.btn:hover::after { left: 130%; }
+
+.btn-primary {
+  padding: 13px 26px; border-radius: var(--r-btn); font-size: 14.5px; color: #fff;
+  background: linear-gradient(140deg, var(--blue) 0%, var(--blue-light) 100%);
+  box-shadow: 0 6px 22px rgba(79,140,255,.40), 0 1px 4px rgba(0,0,0,.09),
+              inset 0 1px 0 rgba(255,255,255,.22);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79,140,255,.52); }
+.btn-primary:active { transform: scale(.97); }
+
+.btn-secondary {
+  padding: 11px 22px; border-radius: var(--r-btn); font-size: 13.5px; color: var(--t1);
+  background: rgba(255,255,255,.65);
+  border: 1px solid rgba(255,255,255,.82) !important;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 2px 12px rgba(0,0,0,.055);
+}
+.btn-secondary:hover { background: rgba(255,255,255,.88); transform: translateY(-1px); }
+.btn-secondary:active { transform: scale(.97); }
+
+.btn-sm { padding: 8px 16px !important; font-size: 12.5px !important; border-radius: 14px !important; }
+.btn-xs { padding: 6px 12px !important; font-size: 12px !important; border-radius: 12px !important; }
+
+/* ── INPUTS ────────────────────────────────────────────────── */
+.inp {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--r-input);
+  background: rgba(255,255,255,.62);
+  border: 1.5px solid rgba(255,255,255,.82);
+  font-family: inherit; font-size: 13.5px; color: var(--t1);
+  outline: none; backdrop-filter: blur(14px);
+  transition: all .2s;
+}
+.inp:focus {
+  border-color: rgba(79,140,255,.42);
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 0 0 3.5px rgba(79,140,255,.11);
+}
+.inp::placeholder { color: var(--t3); }
+
+.sel {
+  width: 100%;
+  padding: 12px 38px 12px 16px;
+  border-radius: var(--r-input);
+  background: rgba(255,255,255,.62);
+  border: 1.5px solid rgba(255,255,255,.82);
+  font-family: inherit; font-size: 13.5px; color: var(--t1);
+  outline: none; appearance: none; cursor: pointer;
+  backdrop-filter: blur(14px); transition: all .2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ba8bc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+}
+.sel:focus { border-color: rgba(79,140,255,.42); box-shadow: 0 0 0 3.5px rgba(79,140,255,.11); background-color: rgba(255,255,255,.88); }
+
+.lbl { display: block; font-size: 11.5px; font-weight: 640; color: var(--t2); margin-bottom: 7px; letter-spacing: .05em; text-transform: uppercase; }
+.inp-group { margin-bottom: 16px; }
+
+/* Prefix input */
+.inp-prefix { position: relative; }
+.inp-prefix .prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 13.5px; color: var(--t2); font-weight: 600; pointer-events: none; }
+.inp-prefix .inp { padding-left: 26px; }
+.inp-suffix .suffix { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
+.inp-suffix { position: relative; }
+
+/* ── BADGES ────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 640;
+}
+.badge-blue   { background: rgba(79,140,255,.12); color: var(--blue); }
+.badge-sky    { background: rgba(56,189,248,.12);  color: #0369a1; }
+.badge-slate  { background: rgba(100,116,139,.1);  color: #475569; }
+.badge-amber  { background: rgba(245,158,11,.12);  color: #b45309; }
+.badge-red    { background: rgba(239,68,68,.12);   color: #dc2626; }
+
+/* ── PILLS (table) ─────────────────────────────────────────── */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; border-radius: 20px;
+  font-size: 12px; font-weight: 640;
+}
+.pill-blue    { background: rgba(79,140,255,.11); color: var(--blue); }
+.pill-sky     { background: rgba(56,189,248,.11); color: #0369a1; }
+.pill-amber   { background: rgba(245,158,11,.11); color: #b45309; }
+.pill-red     { background: rgba(239,68,68,.11);  color: #dc2626; }
+
+/* ── STAT CARD ─────────────────────────────────────────────── */
+.sc { padding: 22px 22px 18px; }
+.sc-label { font-size: 11.5px; font-weight: 640; color: var(--t3); text-transform: uppercase; letter-spacing: .065em; margin-bottom: 8px; }
+.sc-value { font-size: 30px; font-weight: 860; letter-spacing: -.03em; color: var(--t1); }
+.sc-sub   { font-size: 12px; color: var(--t2); margin-top: 4px; }
+
+/* ── SCORE RING ────────────────────────────────────────────── */
+.ring-wrap {
+  position: relative; display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 88px; height: 88px; flex-shrink: 0;
+}
+.ring-wrap svg { position: absolute; top:0; left:0; transform: rotate(-90deg); }
+.ring-inner { text-align: center; }
+.ring-num { font-size: 21px; font-weight: 860; letter-spacing: -.03em; }
+.ring-den { font-size: 10.5px; color: var(--t3); }
+
+/* ── DONUT ─────────────────────────────────────────────────── */
+.donut-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.donut-center { position: absolute; text-align: center; }
+
+/* ── PROGRESS BAR ──────────────────────────────────────────── */
+.pbar-track { background: rgba(255,255,255,.45); border-radius: 99px; height: 6px; overflow: hidden; }
+.pbar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--blue-light)); transition: width 1s cubic-bezier(.4,0,.2,1); }
+
+/* ── SPARKLINE ─────────────────────────────────────────────── */
+.spark { display: block; overflow: visible; }
+
+/* ── TABLE ─────────────────────────────────────────────────── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  font-size: 11px; font-weight: 660; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .07em;
+  padding: 12px 18px; text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,.5);
+}
+.tbl td {
+  padding: 14px 18px; font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.3);
+  vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr { transition: background .14s; }
+.tbl tbody tr:hover td { background: rgba(255,255,255,.22); }
+
+/* Row avatar */
+.row-av {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(145deg, var(--blue), var(--blue-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+  border: 2px solid rgba(255,255,255,.7);
+}
+.row-info { display: flex; align-items: center; gap: 10px; }
+.row-name { font-size: 13.5px; font-weight: 640; }
+.row-sub  { font-size: 11.5px; color: var(--t3); margin-top: 1px; }
+
+/* ── TABS ──────────────────────────────────────────────────── */
+.tabs {
+  display: flex; gap: 3px; padding: 5px;
+  background: rgba(255,255,255,.42);
+  border-radius: 16px; border: 1px solid rgba(255,255,255,.62);
+  width: fit-content; margin-bottom: 26px; flex-wrap: wrap;
+}
+.tab {
+  padding: 8px 16px; border-radius: 11px;
+  font-size: 13px; font-weight: 510; color: var(--t2);
+  border: none; background: transparent; cursor: pointer;
+  transition: all .2s; font-family: inherit;
+}
+.tab.active {
+  background: rgba(255,255,255,.86);
+  color: var(--blue); font-weight: 640;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+}
+
+/* ── TOGGLE ────────────────────────────────────────────────── */
+.toggle-row {
+  display: inline-flex; align-items: center; gap: 3px; padding: 4px;
+  background: rgba(255,255,255,.45); border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.65);
+}
+.toggle-opt {
+  padding: 7px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 510; color: var(--t2);
+  border: none; background: transparent; cursor: pointer;
+  transition: all .2s; font-family: inherit;
+}
+.toggle-opt.active { background: var(--blue); color: #fff; font-weight: 640; box-shadow: 0 4px 14px rgba(79,140,255,.35); }
+.save-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; background: rgba(79,140,255,.12); color: var(--blue); border-radius: 20px; margin-left: 4px; }
+
+/* ── ACTION BTN (icon) ─────────────────────────────────────── */
+.act-btn {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.72);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 13px; color: var(--t2);
+  transition: all .18s; user-select: none;
+}
+.act-btn:hover { background: rgba(255,255,255,.9); color: var(--blue); transform: scale(1.08); }
+
+/* ── SWITCH ────────────────────────────────────────────────── */
+.sw { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+.sw input { display: none; }
+.sw-track {
+  position: absolute; inset: 0; border-radius: 99px;
+  background: rgba(180,195,220,.6); cursor: pointer; transition: all .25s;
+}
+.sw-track::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; left: 3px; top: 3px;
+  background: #fff; border-radius: 50%;
+  transition: all .25s; box-shadow: 0 1px 5px rgba(0,0,0,.14);
+}
+.sw input:checked ~ .sw-track { background: var(--blue); }
+.sw input:checked ~ .sw-track::before { transform: translateX(18px); }
+
+/* ── PAGINATION ────────────────────────────────────────────── */
+.pager { display: flex; align-items: center; gap: 5px; }
+.pg-btn {
+  width: 32px; height: 32px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.62);
+  background: rgba(255,255,255,.45);
+  font-size: 13px; font-weight: 600; color: var(--t2);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .18s; font-family: inherit;
+}
+.pg-btn:hover { background: rgba(255,255,255,.78); }
+.pg-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 3px 12px rgba(79,140,255,.35); }
+
+/* ── DIVIDER ───────────────────────────────────────────────── */
+.div { height: 1px; background: rgba(255,255,255,.45); margin: 18px 0; }
+
+/* ── PAGE HEADER ───────────────────────────────────────────── */
+.pg-head { margin-bottom: 28px; }
+.pg-head h1 { font-size: 26px; font-weight: 820; letter-spacing: -.025em; }
+.pg-head p  { font-size: 14px; color: var(--t2); margin-top: 5px; }
+
+/* ── GRID HELPERS ──────────────────────────────────────────── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+
+/* ── FLOAT ANIMATION ───────────────────────────────────────── */
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.82)} }
+@keyframes spin  { to{transform:rotate(360deg)} }
+@keyframes fadeUp{ from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── GLOW ORB ──────────────────────────────────────────────── */
+.glow { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+
+/* ── ANALYSIS LOADING OVERLAY ──────────────────────────────── */
+.ai-overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(237,241,247,.75);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+.ai-overlay.show { display: flex; }
+.spinner {
+  width: 62px; height: 62px; border-radius: 50%;
+  border: 3px solid rgba(79,140,255,.15);
+  border-top-color: var(--blue);
+  animation: spin .75s linear infinite;
+}
+
+/* ── CHECK ITEMS ───────────────────────────────────────────── */
+.check-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 11px; font-size: 13.5px; }
+.check-ic  { color: var(--blue); font-size: 13px; margin-top: 1px; flex-shrink: 0; }
+
+/* ── SETTINGS ROW ──────────────────────────────────────────── */
+.srow {
+  display: flex; align-items: center; padding: 14px 20px;
+  gap: 13px; border-bottom: 1px solid rgba(255,255,255,.35);
+}
+.srow:last-child { border-bottom: none; }
+.srow-label { flex: 1; font-size: 13.5px; font-weight: 540; }
+.srow-sub   { font-size: 12px; color: var(--t3); margin-top: 2px; }
+
+/* ── REPORT ROW ────────────────────────────────────────────── */
+.rrow {
+  display: flex; align-items: center; padding: 15px 20px;
+  gap: 14px; border-bottom: 1px solid rgba(255,255,255,.35);
+  transition: background .14s;
+}
+.rrow:last-child { border-bottom: none; }
+.rrow:hover { background: rgba(255,255,255,.22); border-radius: 14px; }
+.rrow-icon {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+
+/* ── CAMPAIGN CARD ─────────────────────────────────────────── */
+.cc { padding: 20px 22px; }
+.cc-status { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); display: inline-block; }
+
+/* ── HERO ──────────────────────────────────────────────────── */
+.hero-wrap {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 56px; align-items: center;
+  min-height: calc(100vh - var(--nav-h) - 68px);
+  padding: 48px 0 36px;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px 5px 9px; border-radius: 20px;
+  background: rgba(79,140,255,.09); border: 1px solid rgba(79,140,255,.2);
+  font-size: 12.5px; font-weight: 640; color: var(--blue); margin-bottom: 24px;
+}
+.eyebrow-dot { width: 6px; height: 6px; background: var(--blue); border-radius: 50%; animation: pulse 1.9s ease-in-out infinite; }
+.hero-h1 {
+  font-size: 62px; font-weight: 900; letter-spacing: -.045em; line-height: 1.03;
+  margin-bottom: 22px;
+}
+.hero-h1 .grad {
+  background: linear-gradient(138deg, var(--blue) 0%, var(--blue-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  font-size: 16px; color: var(--t2); line-height: 1.68;
+  max-width: 400px; margin-bottom: 34px;
+}
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-trust {
+  margin-top: 42px; font-size: 12px; color: var(--t3); font-weight: 540;
+}
+.trust-logos { display: flex; align-items: center; gap: 22px; margin-top: 14px; opacity: .45; }
+.trust-logo  { font-size: 13px; font-weight: 700; color: var(--t2); }
+
+/* Device mockup */
+.device-float { animation: float 5.5s ease-in-out infinite; }
+.device {
+  border-radius: 22px; padding: 18px;
+  background: rgba(255,255,255,.56);
+  backdrop-filter: blur(44px);
+  -webkit-backdrop-filter: blur(44px);
+  border: 1px solid rgba(255,255,255,.78);
+  box-shadow: 0 28px 80px rgba(79,140,255,.18), 0 6px 24px rgba(0,0,0,.07),
+              inset 0 1px 0 rgba(255,255,255,.55);
+  width: 100%; max-width: 355px;
+}
+.device-bar {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 14px;
+}
+.dot-r { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+.dot-a { width: 9px; height: 9px; border-radius: 50%; background: #febc2e; }
+.dot-g { width: 9px; height: 9px; border-radius: 50%; background: #28c840; }
+.device-title { font-size: 11.5px; font-weight: 640; color: var(--t2); margin-left: 8px; }
+.device-title-r { margin-left: auto; font-size: 16px; cursor: pointer; }
+
+/* Mini stat in device */
+.ms {
+  padding: 11px 10px;
+  background: rgba(255,255,255,.52);
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 14px;
+}
+.ms-label { font-size: 9.5px; font-weight: 640; color: var(--t3); margin-bottom: 3px; }
+.ms-val   { font-size: 19px; font-weight: 860; letter-spacing: -.025em; }
+
+/* Mini bars */
+.mini-bars { display: flex; align-items: flex-end; gap: 3px; }
+.mb { border-radius: 3px 3px 0 0; background: linear-gradient(180deg, rgba(110,168,255,.7), rgba(79,140,255,.4)); }
+
+/* ── PRICING CARD ──────────────────────────────────────────── */
+.pc { padding: 28px 24px; position: relative; }
+.pc.popular {
+  background: linear-gradient(155deg, rgba(79,140,255,.16), rgba(110,168,255,.09));
+  border: 1.5px solid rgba(79,140,255,.32) !important;
+}
+.pc-badge {
+  position: absolute; top: -1px; right: 20px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-light));
+  color: #fff; font-size: 10.5px; font-weight: 700;
+  padding: 4px 12px; border-radius: 0 0 12px 12px; letter-spacing: .04em;
+}
+.pc-price { font-size: 36px; font-weight: 900; letter-spacing: -.035em; }
+.pc-price sub { font-size: 15px; font-weight: 500; color: var(--t2); vertical-align: baseline; }
+.pc-features { list-style: none; margin: 18px 0 22px; display: flex; flex-direction: column; gap: 9px; }
+.pc-features li {
+  font-size: 13px; color: var(--t2);
+  display: flex; align-items: center; gap: 8px;
+}
+.pc-features li::before { content: '✓'; color: var(--blue); font-weight: 700; font-size: 13px; }
+
+/* Search bar */
+.search-rel { position: relative; display: flex; align-items: center; }
+.search-ic  { position: absolute; left: 13px; font-size: 14px; color: var(--t3); pointer-events: none; }
+.search-rel .inp { padding-left: 36px; }
+
+/* ── MISC ──────────────────────────────────────────────────── */
+.row-between { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.row-end     { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="ai-overlay" id="aiOverlay">
+  <div class="spinner"></div>
+  <div style="text-align:center">
+    <div style="font-size:17px;font-weight:720;margin-bottom:5px">Analyzing Influencer</div>
+    <div style="font-size:13px;color:var(--t2)">Analysis takes ~30–60 seconds</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ TOPNAV -->
+<nav class="topnav">
+
+  <!-- Logo — individual border pill -->
+  <div class="nav-pill" onclick="go('home')" style="cursor:pointer;user-select:none">
+    <div class="logo-mark">🧠</div>
+    <span style="font-size:16.5px;font-weight:750;color:var(--t1)">InfluenceIQ</span>
+  </div>
+
+  <ul class="topnav-links">
+    <li><a onclick="go('home')">Product</a></li>
+    <li><a onclick="go('insights')">Features</a></li>
+    <li><a onclick="go('pricing')">Pricing</a></li>
+    <li><a>Resources</a></li>
+    <li><a>About</a></li>
+  </ul>
+
+  <!-- Right — settings + avatar in one pill -->
+  <div class="topnav-right">
+    <div class="nav-pill nav-pill-right">
+      <div class="nav-icon-btn">⚙️</div>
+      <div class="topnav-avatar" id="avatarBtn">K<div class="notif-dot"></div></div>
+    </div>
+  </div>
+
+</nav>
+
+<!-- ══════════════════════════════════ APP SHELL -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="nav-group">
+      <div class="nav-item active" data-p="home">
+        <span class="nav-ic">🏠</span> Home
+      </div>
+      <div class="nav-item" data-p="analyze">
+        <span class="nav-ic">🔍</span> Analyze
+      </div>
+      <div class="nav-item" data-p="history">
+        <span class="nav-ic">📋</span> History
+      </div>
+      <div class="nav-item" data-p="insights">
+        <span class="nav-ic">💡</span> Insights
+      </div>
+      <div class="nav-item" data-p="campaigns">
+        <span class="nav-ic">🚀</span> Campaigns
+      </div>
+      <div class="nav-item" data-p="reports">
+        <span class="nav-ic">📄</span> Reports
+      </div>
+      <div class="nav-item" data-p="settings">
+        <span class="nav-ic">⚙️</span> Settings
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <h4>Upgrade Plan</h4>
+      <p>Unlock advanced analytics and reports.</p>
+      <button class="btn btn-primary btn-sm" style="width:100%" onclick="go('pricing')">Upgrade →</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainArea">
+
+    <!-- ════════════════ HOME / LANDING ════════════════ -->
+    <section class="page" id="page-home">
+      <div class="section-label">01. Home / Landing</div>
+      <div class="hero-wrap">
+
+        <!-- Left -->
+        <div>
+          <div class="hero-eyebrow">
+            <div class="eyebrow-dot"></div>
+            AI-Powered Influencer Analytics
+          </div>
+          <h1 class="hero-h1">
+            Predict.<br>Analyze.<br><span class="grad">Grow.</span>
+          </h1>
+          <p class="hero-sub">AI-powered influencer analytics that help you predict ROI, forecast sales, and scale with confidence.</p>
+          <div class="hero-cta">
+            <button class="btn btn-primary" style="font-size:15px;padding:14px 30px" onclick="go('analyze')">Start Free Analysis</button>
+            <button class="btn btn-secondary" style="font-size:15px;padding:14px 26px">View Demo</button>
+          </div>
+          <div class="hero-trust">
+            Trusted by 1,200+ teams
+            <div class="trust-logos">
+              <span class="trust-logo">stripe</span>
+              <span class="trust-logo">shopify</span>
+              <span class="trust-logo">Notion</span>
+              <span class="trust-logo">Discord</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right — Floating Device -->
+        <div style="position:relative;display:flex;justify-content:center;align-items:center">
+          <div class="glow" style="width:280px;height:280px;background:rgba(79,140,255,.17);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+          <div class="glow" style="width:160px;height:160px;background:rgba(110,168,255,.12);top:35%;left:55%;transform:translate(-50%,-50%);animation:float 3.5s ease-in-out infinite"></div>
+
+          <div class="device-float">
+            <div class="device">
+              <!-- Titlebar -->
+              <div class="device-bar">
+                <div class="dot-r"></div><div class="dot-a"></div><div class="dot-g"></div>
+                <span class="device-title">Dashboard</span>
+                <span class="device-title-r" style="color:var(--t3)">···</span>
+              </div>
+
+              <!-- Stat row -->
+              <div class="g3" style="gap:8px;margin-bottom:12px">
+                <div class="ms">
+                  <div class="ms-label">Total Analyses</div>
+                  <div class="ms-val">24</div>
+                  <div class="badge badge-blue" style="margin-top:4px;font-size:9.5px;padding:2px 7px">+12% this month</div>
+                </div>
+                <div class="ms">
+                  <div class="ms-label">Average ROI</div>
+                  <div class="ms-val">215%</div>
+                  <div class="badge badge-blue" style="margin-top:4px;font-size:9.5px;padding:2px 7px">Very High</div>
+                </div>
+                <div class="ms">
+                  <div class="ms-label">Success Rate</div>
+                  <div class="ms-val">76%</div>
+                  <div class="badge badge-sky" style="margin-top:4px;font-size:9.5px;padding:2px 7px">Very Good</div>
+                </div>
+              </div>
+
+              <!-- Mini chart -->
+              <div class="inner-glass" style="padding:12px 14px;margin-bottom:12px">
+                <div style="font-size:10.5px;font-weight:640;color:var(--t2);margin-bottom:8px">ROI Over Time</div>
+                <div class="mini-bars" style="height:38px;align-items:flex-end">
+                  <div class="mb" style="flex:1;height:30%"></div>
+                  <div class="mb" style="flex:1;height:44%"></div>
+                  <div class="mb" style="flex:1;height:38%"></div>
+                  <div class="mb" style="flex:1;height:58%"></div>
+                  <div class="mb" style="flex:1;height:53%"></div>
+                  <div class="mb" style="flex:1;height:72%"></div>
+                  <div class="mb" style="flex:1;height:100%;background:linear-gradient(180deg,var(--blue-light),var(--blue));box-shadow:0 0 10px rgba(79,140,255,.5)"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:5px">
+                  <span style="font-size:8.5px;color:var(--t3)">May 6</span>
+                  <span style="font-size:9px;font-weight:640;color:var(--blue)">May 12 · 215%</span>
+                </div>
+              </div>
+
+              <!-- Recent analyses -->
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+                <span style="font-size:10.5px;font-weight:700;color:var(--t2)">Recent Analyses</span>
+                <span style="font-size:10px;color:var(--blue);cursor:pointer;font-weight:640" onclick="go('history')">View All</span>
+              </div>
+              <div class="inner-glass" style="padding:9px 11px;display:flex;align-items:center;gap:9px">
+                <div class="row-av" style="width:28px;height:28px;font-size:11px">C</div>
+                <div style="flex:1">
+                  <div style="font-size:11.5px;font-weight:640">@creator</div>
+                  <div style="font-size:10px;color:var(--t3)">100K Followers</div>
+                </div>
+                <div style="text-align:right;margin-right:6px">
+                  <div style="font-size:12px;font-weight:820">8.6</div>
+                  <div style="font-size:9.5px;color:var(--t3)">215% ROI</div>
+                </div>
+                <span class="pill pill-blue" style="font-size:10px;padding:2px 8px">Good to Go</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ANALYZE ════════════════ -->
+    <section class="page" id="page-analyze">
+      <div class="section-label">02. Analyze Influencer</div>
+      <div class="pg-head">
+        <h1>Analyze Any Influencer</h1>
+        <p>Enter influencer details and let our AI do the rest.</p>
+      </div>
+
+      <div class="g2" style="align-items:start;gap:26px">
+        <!-- Form -->
+        <div class="card" style="padding:30px">
+          <div class="inp-group inp-suffix">
+            <label class="lbl">TikTok Profile URL</label>
+            <input class="inp" id="pUrl" type="url" placeholder="https://www.tiktok.com/@creator">
+            <span class="suffix">🎵</span>
+          </div>
+          <div class="g2">
+            <div class="inp-group inp-prefix">
+              <label class="lbl">Ad Spend</label>
+              <span class="prefix">$</span>
+              <input class="inp" type="text" placeholder="500">
+            </div>
+            <div class="inp-group inp-prefix">
+              <label class="lbl">Product Price</label>
+              <span class="prefix">$</span>
+              <input class="inp" type="text" placeholder="49.99">
+            </div>
+          </div>
+          <div class="g2">
+            <div class="inp-group">
+              <label class="lbl">Campaign Type</label>
+              <select class="sel">
+                <option>Product Promotion</option>
+                <option>Brand Awareness</option>
+                <option>Affiliate</option>
+                <option>Sponsored Review</option>
+              </select>
+            </div>
+            <div class="inp-group">
+              <label class="lbl">Account Size</label>
+              <select class="sel">
+                <option>100K – 500K</option>
+                <option>10K – 100K</option>
+                <option>500K – 1M</option>
+                <option>1M+</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:15px;font-size:15.5px;margin-top:4px" onclick="startAnalysis()">
+            ✨ Analyze Influencer →
+          </button>
+          <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--t3)">Analysis takes ~30–60 seconds</div>
+        </div>
+
+        <!-- Info -->
+        <div>
+          <div class="card" style="padding:26px;margin-bottom:18px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Our AI will analyze:</h3>
+            <div class="check-row"><span class="check-ic">✓</span> Audience quality &amp; engagement</div>
+            <div class="check-row"><span class="check-ic">✓</span> Follower growth potential</div>
+            <div class="check-row"><span class="check-ic">✓</span> Sales &amp; revenue forecast</div>
+            <div class="check-row"><span class="check-ic">✓</span> ROI &amp; profit estimation</div>
+            <div class="check-row"><span class="check-ic">✓</span> Risk detection &amp; authenticity</div>
+          </div>
+
+          <!-- AI visual -->
+          <div class="card" style="padding:28px;display:flex;align-items:center;justify-content:center;min-height:165px;overflow:hidden">
+            <div class="glow" style="width:190px;height:190px;background:rgba(79,140,255,.18);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+            <div class="glow" style="width:110px;height:110px;background:rgba(110,168,255,.14);top:50%;left:50%;transform:translate(-50%,-50%);animation:float 3.2s ease-in-out infinite"></div>
+            <div style="position:relative;text-align:center">
+              <div style="font-size:52px;animation:float 4.2s ease-in-out infinite">🤖</div>
+              <div style="font-size:13px;font-weight:640;color:var(--t2);margin-top:10px">AI Engine Ready</div>
+              <div style="font-size:12px;color:var(--t3);margin-top:3px">Powered by InfluenceIQ v3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ RESULTS ════════════════ -->
+    <section class="page" id="page-results">
+      <div class="section-label">03. Analysis Results</div>
+      <div class="row-between" style="margin-bottom:24px">
+        <div>
+          <h1 style="font-size:24px;font-weight:820;letter-spacing:-.02em">Analysis Results</h1>
+          <div style="font-size:13px;color:var(--t3);margin-top:4px">Completed 45 seconds ago</div>
+        </div>
+        <div class="row-end">
+          <button class="btn btn-secondary btn-sm">⬇ Download Report</button>
+          <button class="btn btn-secondary btn-sm">↗ Share</button>
+        </div>
+      </div>
+
+      <div class="g2" style="align-items:start;gap:22px">
+        <!-- Left -->
+        <div>
+          <!-- Score / Followers / Sales -->
+          <div class="g3" style="gap:14px;margin-bottom:16px">
+            <!-- Score -->
+            <div class="card sc">
+              <div class="sc-label">Overall Score</div>
+              <div class="ring-wrap" style="width:72px;height:72px">
+                <svg width="72" height="72" viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(79,140,255,.12)" stroke-width="6"/>
+                  <circle cx="36" cy="36" r="28" fill="none" stroke="url(#rg1)" stroke-width="6"
+                    stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="31.7" class="arc"/>
+                  <defs><linearGradient id="rg1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#4F8CFF"/>
+                    <stop offset="100%" stop-color="#6EA8FF"/>
+                  </linearGradient></defs>
+                </svg>
+                <div class="ring-inner">
+                  <div class="ring-num">8.6</div>
+                  <div class="ring-den">/10</div>
+                </div>
+              </div>
+              <div class="badge badge-blue" style="margin-top:8px">Excellent Potential</div>
+            </div>
+
+            <!-- New Followers -->
+            <div class="card sc">
+              <div class="sc-label">New Followers</div>
+              <div class="sc-value" style="color:var(--blue)">+2,450</div>
+              <div class="sc-sub">Predicted</div>
+              <svg class="spark" width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none" style="margin-top:8px">
+                <polyline points="0,26 15,22 30,17 45,13 60,10 75,7 90,4 100,2" fill="none" stroke="rgba(79,140,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <!-- Sales -->
+            <div class="card sc">
+              <div class="sc-label">Sales Forecast</div>
+              <div class="sc-value">320</div>
+              <div class="sc-sub">Predicted</div>
+              <svg class="spark" width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none" style="margin-top:8px">
+                <polyline points="0,26 20,20 40,16 55,13 70,9 85,6 100,3" fill="none" stroke="rgba(79,140,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Profit / ROI -->
+          <div class="g2" style="gap:14px;margin-bottom:16px">
+            <div class="card sc">
+              <div class="sc-label">Profit Forecast</div>
+              <div class="sc-value" style="color:var(--blue)">+$4,320</div>
+              <div class="sc-sub">Estimated</div>
+            </div>
+            <div class="card sc">
+              <div class="sc-label">ROI</div>
+              <div class="sc-value">215%</div>
+              <div class="badge badge-blue" style="margin-top:8px">Very High</div>
+            </div>
+          </div>
+
+          <!-- Recommendation -->
+          <div class="card" style="padding:22px 24px">
+            <div class="sc-label">Recommendation</div>
+            <div style="font-size:22px;font-weight:820;color:var(--blue);margin-bottom:6px">✓ Good to Go</div>
+            <div style="font-size:13px;color:var(--t2);line-height:1.55">This influencer is a great fit for your campaign.</div>
+          </div>
+        </div>
+
+        <!-- Right: Profile -->
+        <div class="card" style="padding:22px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+            <div class="row-av" style="width:52px;height:52px;font-size:19px;border:3px solid rgba(255,255,255,.82)">C</div>
+            <div style="flex:1">
+              <div style="font-size:16px;font-weight:720">@creator</div>
+              <div style="font-size:13px;color:var(--t3)">100K Followers</div>
+            </div>
+            <div style="background:rgba(0,0,0,.82);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:16px">🎵</span>
+            </div>
+          </div>
+
+          <div class="g2" style="gap:10px;margin-bottom:18px">
+            <div class="inner-glass" style="padding:12px 14px">
+              <div style="font-size:10.5px;color:var(--t3);font-weight:640;margin-bottom:4px">Engagement Rate</div>
+              <div style="font-size:18px;font-weight:820">5.8%</div>
+            </div>
+            <div class="inner-glass" style="padding:12px 14px">
+              <div style="font-size:10.5px;color:var(--t3);font-weight:640;margin-bottom:4px">Avg. Likes</div>
+              <div style="font-size:18px;font-weight:820">12.4K</div>
+            </div>
+            <div class="inner-glass" style="padding:12px 14px">
+              <div style="font-size:10.5px;color:var(--t3);font-weight:640;margin-bottom:4px">Avg. Comments</div>
+              <div style="font-size:18px;font-weight:820">320</div>
+            </div>
+            <div class="inner-glass" style="padding:12px 14px">
+              <div style="font-size:10.5px;color:var(--t3);font-weight:640;margin-bottom:4px">Est. Reach</div>
+              <div style="font-size:18px;font-weight:820">180–250K</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;font-size:14px" onclick="go('insights')">View Full Report →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ HISTORY ════════════════ -->
+    <section class="page" id="page-history">
+      <div class="section-label">04. Analysis History</div>
+      <div class="row-between" style="margin-bottom:24px">
+        <div class="pg-head" style="margin:0">
+          <h1>Analysis History</h1>
+          <p>View all your past analyses and results.</p>
+        </div>
+        <div class="row-end">
+          <div class="search-rel">
+            <span class="search-ic">🔍</span>
+            <input class="inp" type="text" placeholder="Search analyses…" style="width:210px;padding-top:9px;padding-bottom:9px">
+          </div>
+          <select class="sel" style="width:95px;padding-top:9px;padding-bottom:9px">
+            <option>All</option>
+            <option>Good to Go</option>
+            <option>Caution</option>
+            <option>Risky</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card" style="padding:8px">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Influencer</th>
+              <th>Date</th>
+              <th>Overall Score</th>
+              <th>ROI</th>
+              <th>Recommendation</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="row-info"><div class="row-av">C</div><div><div class="row-name">@creator</div><div class="row-sub">100K Followers</div></div></div></td>
+              <td><div style="font-size:13px">May 12, 2025</div><div style="font-size:11.5px;color:var(--t3)">10:30 AM</div></td>
+              <td><div style="font-size:15px;font-weight:820">8.6</div><div class="badge badge-blue" style="margin-top:3px">Excellent</div></td>
+              <td><div style="font-size:14px;font-weight:720">215%</div><div style="font-size:11.5px;color:var(--t3)">Very High</div></td>
+              <td><span class="pill pill-blue">✓ Good to Go</span></td>
+              <td><div class="row-end" style="gap:5px"><span class="act-btn">⬇</span><span class="act-btn">⚙</span><span class="act-btn">⊞</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="row-info"><div class="row-av" style="background:linear-gradient(145deg,#818cf8,#6366f1)">C</div><div><div class="row-name">@creator2</div><div class="row-sub">250K Followers</div></div></div></td>
+              <td><div style="font-size:13px">May 10, 2025</div><div style="font-size:11.5px;color:var(--t3)">2:15 PM</div></td>
+              <td><div style="font-size:15px;font-weight:820">7.4</div><div class="badge badge-sky" style="margin-top:3px">Good</div></td>
+              <td><div style="font-size:14px;font-weight:720">168%</div><div style="font-size:11.5px;color:var(--t3)">High</div></td>
+              <td><span class="pill pill-amber">⚠ Proceed with Caution</span></td>
+              <td><div class="row-end" style="gap:5px"><span class="act-btn">⬇</span><span class="act-btn">⚙</span><span class="act-btn">⊞</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="row-info"><div class="row-av" style="background:linear-gradient(145deg,#fb923c,#ea580c)">C</div><div><div class="row-name">@creator3</div><div class="row-sub">500K Followers</div></div></div></td>
+              <td><div style="font-size:13px">May 8, 2025</div><div style="font-size:11.5px;color:var(--t3)">9:45 AM</div></td>
+              <td><div style="font-size:15px;font-weight:820">6.2</div><div class="badge badge-amber" style="margin-top:3px">Average</div></td>
+              <td><div style="font-size:14px;font-weight:720">92%</div><div style="font-size:11.5px;color:var(--t3)">Moderate</div></td>
+              <td><span class="pill pill-red">⚡ Risky</span></td>
+              <td><div class="row-end" style="gap:5px"><span class="act-btn">⬇</span><span class="act-btn">⚙</span><span class="act-btn">⊞</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="row-info"><div class="row-av" style="background:linear-gradient(145deg,#f87171,#dc2626)">I</div><div><div class="row-name">@influencer4</div><div class="row-sub">75K Followers</div></div></div></td>
+              <td><div style="font-size:13px">May 5, 2025</div><div style="font-size:11.5px;color:var(--t3)">4:20 PM</div></td>
+              <td><div style="font-size:15px;font-weight:820">4.1</div><div class="badge badge-red" style="margin-top:3px">Low</div></td>
+              <td><div style="font-size:14px;font-weight:720;color:#dc2626">-12%</div><div style="font-size:11.5px;color:var(--t3)">Negative</div></td>
+              <td><span class="pill pill-red">✕ Not Recommended</span></td>
+              <td><div class="row-end" style="gap:5px"><span class="act-btn">⬇</span><span class="act-btn">⚙</span><span class="act-btn">⊞</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="padding:12px 12px 6px;display:flex;justify-content:center">
+          <div class="pager">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <span style="font-size:13px;color:var(--t3);padding:0 4px">…</span>
+            <button class="pg-btn">12</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ INSIGHTS ════════════════ -->
+    <section class="page" id="page-insights">
+      <div class="section-label">05. Insights</div>
+      <div class="pg-head">
+        <h1>Insights</h1>
+        <p>Deep insights and analytics to help you make better decisions.</p>
+      </div>
+
+      <div class="tabs" id="insTabs">
+        <button class="tab active" onclick="switchTab(this)">Audience Quality</button>
+        <button class="tab" onclick="switchTab(this)">Engagement</button>
+        <button class="tab" onclick="switchTab(this)">Growth Potential</button>
+        <button class="tab" onclick="switchTab(this)">Audience Demographics</button>
+        <button class="tab" onclick="switchTab(this)">Risk Analysis</button>
+      </div>
+
+      <div class="g2" style="align-items:start;gap:20px">
+        <!-- Left -->
+        <div>
+          <!-- Score + Donut -->
+          <div class="card" style="padding:24px;margin-bottom:16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+              <div>
+                <div class="sc-label">Audience Quality Score</div>
+                <div style="font-size:40px;font-weight:900;letter-spacing:-.035em;line-height:1">82<span style="font-size:18px;font-weight:500;color:var(--t3)">/100</span></div>
+                <div class="badge badge-blue" style="margin-top:8px">Very Good</div>
+              </div>
+              <!-- Donut -->
+              <div class="donut-wrap" style="width:88px;height:88px">
+                <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+                  <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(79,140,255,.1)" stroke-width="8"/>
+                  <circle cx="44" cy="44" r="34" fill="none" stroke="url(#dg1)" stroke-width="8" stroke-linecap="round"
+                    stroke-dasharray="213.6" stroke-dashoffset="38.4" class="arc"/>
+                  <defs><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#4F8CFF"/>
+                    <stop offset="100%" stop-color="#6EA8FF"/>
+                  </linearGradient></defs>
+                </svg>
+                <div class="donut-center">
+                  <div style="font-size:15px;font-weight:820;color:var(--t1)">82%</div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12.5px;color:var(--t2);line-height:1.6">High quality audience with low fake follower percentage.</div>
+          </div>
+
+          <!-- Authenticity + Engagement -->
+          <div class="g2" style="gap:14px;margin-bottom:16px">
+            <div class="card" style="padding:20px">
+              <div class="sc-label">Follower Authenticity</div>
+              <div style="font-size:30px;font-weight:900;letter-spacing:-.03em;color:var(--blue)">91%</div>
+              <div style="font-size:12px;color:var(--t2);margin-bottom:14px">Real Followers</div>
+              <div class="pbar-track" style="margin-bottom:5px"><div class="pbar-fill" data-w="91"></div></div>
+              <div style="font-size:11px;color:var(--t3);margin-top:5px">9% Potentially Fake</div>
+            </div>
+            <div class="card" style="padding:20px">
+              <div class="sc-label">Engagement Quality</div>
+              <div style="font-size:30px;font-weight:900;letter-spacing:-.03em;color:var(--blue)">7.6%</div>
+              <div style="font-size:12px;color:var(--t2);margin-bottom:14px">Excellent</div>
+              <svg width="100%" height="34" viewBox="0 0 120 34" preserveAspectRatio="none">
+                <polyline points="0,30 20,24 40,19 55,15 70,11 85,8 100,5 120,3" fill="none" stroke="rgba(79,140,255,.8)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="card" style="padding:22px">
+            <div style="font-weight:700;font-size:14px;margin-bottom:16px">Audience Quality Breakdown</div>
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:540">Real Followers</span>
+                <span style="font-size:13px;font-weight:720;color:var(--blue)">91%</span>
+              </div>
+              <div class="pbar-track"><div class="pbar-fill" data-w="91"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:540">Good Followers</span>
+                <span style="font-size:13px;font-weight:720;color:var(--blue)">84%</span>
+              </div>
+              <div class="pbar-track"><div class="pbar-fill" data-w="84"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div>
+          <!-- Key Insights -->
+          <div class="card" style="padding:24px;margin-bottom:16px">
+            <div style="font-size:15px;font-weight:720;margin-bottom:16px">Key Insights</div>
+            <div class="check-row"><span class="check-ic">✓</span> Excellent audience authenticity</div>
+            <div class="check-row"><span class="check-ic">✓</span> High engagement rate for niche</div>
+            <div class="check-row"><span class="check-ic">✓</span> Good follower growth potential</div>
+            <div class="check-row"><span class="check-ic">✓</span> Low risk of fake engagement</div>
+            <div class="div"></div>
+            <button class="btn btn-secondary" style="width:100%;font-size:13.5px" onclick="go('results')">View Full Report →</button>
+          </div>
+
+          <!-- Quality Donut -->
+          <div class="card" style="padding:24px">
+            <div style="font-size:14px;font-weight:720;margin-bottom:18px">Quality Distribution</div>
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+              <div class="donut-wrap" style="width:100px;height:100px;flex-shrink:0">
+                <svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg)">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(79,140,255,.08)" stroke-width="10"/>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#4F8CFF" stroke-width="10"
+                    stroke-dasharray="238.76" stroke-dashoffset="42.98" class="arc"/>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#93c5fd" stroke-width="10"
+                    stroke-dasharray="238.76" stroke-dashoffset="200.77" transform="rotate(-11.52 50 50)" class="arc"/>
+                </svg>
+                <div class="donut-center" style="text-align:center">
+                  <div style="font-size:14px;font-weight:820">82%</div>
+                  <div style="font-size:9.5px;color:var(--t3)">High</div>
+                </div>
+              </div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <div style="width:10px;height:10px;border-radius:3px;background:var(--blue);flex-shrink:0"></div>
+                  <span style="font-size:13px">High Quality</span>
+                  <span style="margin-left:auto;font-size:13px;font-weight:720">82%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <div style="width:10px;height:10px;border-radius:3px;background:#93c5fd;flex-shrink:0"></div>
+                  <span style="font-size:13px">Medium Quality</span>
+                  <span style="margin-left:auto;font-size:13px;font-weight:720">15%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:10px;height:10px;border-radius:3px;background:rgba(79,140,255,.22);flex-shrink:0"></div>
+                  <span style="font-size:13px">Low Quality</span>
+                  <span style="margin-left:auto;font-size:13px;font-weight:720">3%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ CAMPAIGNS ════════════════ -->
+    <section class="page" id="page-campaigns">
+      <div class="section-label">06. Campaigns</div>
+      <div class="row-between" style="margin-bottom:24px">
+        <div class="pg-head" style="margin:0">
+          <h1>Campaigns</h1>
+          <p>Manage and track your influencer campaigns.</p>
+        </div>
+        <button class="btn btn-primary" style="font-size:13.5px">+ New Campaign</button>
+      </div>
+
+      <div class="g3" style="margin-bottom:20px">
+        <div class="card sc"><div class="sc-label">Active Campaigns</div><div class="sc-value">7</div><div class="badge badge-blue" style="margin-top:6px">+2 this week</div></div>
+        <div class="card sc"><div class="sc-label">Total Spend</div><div class="sc-value">$24.8K</div><div class="badge badge-sky" style="margin-top:6px">On Budget</div></div>
+        <div class="card sc"><div class="sc-label">Avg. Campaign ROI</div><div class="sc-value">187%</div><div class="badge badge-blue" style="margin-top:6px">Very High</div></div>
+      </div>
+
+      <!-- Campaign rows -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <div class="card cc">
+          <div class="row-between">
+            <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
+              <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(79,140,255,.3)">👟</div>
+              <div style="min-width:0">
+                <div style="font-size:15px;font-weight:700;margin-bottom:2px">Summer Sneaker Drop</div>
+                <div style="font-size:12px;color:var(--t3)">5 influencers · Started May 1</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Spend</div><div style="font-size:15px;font-weight:720">$4,200</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">ROI</div><div style="font-size:15px;font-weight:720;color:var(--blue)">245%</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Sales</div><div style="font-size:15px;font-weight:720">482</div></div>
+              <span class="pill pill-blue">● Active</span>
+            </div>
+          </div>
+          <div style="margin-top:14px"><div style="font-size:11.5px;color:var(--t3);margin-bottom:6px">Progress: 68% complete</div><div class="pbar-track"><div class="pbar-fill" data-w="68"></div></div></div>
+        </div>
+
+        <div class="card cc">
+          <div class="row-between">
+            <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
+              <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#818cf8,#6366f1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.28)">💄</div>
+              <div style="min-width:0">
+                <div style="font-size:15px;font-weight:700;margin-bottom:2px">Beauty Launch Q2</div>
+                <div style="font-size:12px;color:var(--t3)">8 influencers · Started Apr 20</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Spend</div><div style="font-size:15px;font-weight:720">$8,600</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">ROI</div><div style="font-size:15px;font-weight:720;color:var(--blue)">198%</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Sales</div><div style="font-size:15px;font-weight:720">1,240</div></div>
+              <span class="pill pill-blue">● Active</span>
+            </div>
+          </div>
+          <div style="margin-top:14px"><div style="font-size:11.5px;color:var(--t3);margin-bottom:6px">Progress: 85% complete</div><div class="pbar-track"><div class="pbar-fill" data-w="85"></div></div></div>
+        </div>
+
+        <div class="card cc">
+          <div class="row-between">
+            <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">
+              <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(245,158,11,.28)">🍕</div>
+              <div style="min-width:0">
+                <div style="font-size:15px;font-weight:700;margin-bottom:2px">FoodTech Awareness</div>
+                <div style="font-size:12px;color:var(--t3)">3 influencers · Started May 10</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Spend</div><div style="font-size:15px;font-weight:720">$1,800</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">ROI</div><div style="font-size:15px;font-weight:720;color:#b45309">112%</div></div>
+              <div style="text-align:center"><div style="font-size:12px;color:var(--t3)">Sales</div><div style="font-size:15px;font-weight:720">187</div></div>
+              <span class="pill pill-amber">⏸ Paused</span>
+            </div>
+          </div>
+          <div style="margin-top:14px"><div style="font-size:11.5px;color:var(--t3);margin-bottom:6px">Progress: 42% complete</div><div class="pbar-track"><div class="pbar-fill" data-w="42" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════ REPORTS ════════════════ -->
+    <section class="page" id="page-reports">
+      <div class="section-label">07. Reports</div>
+      <div class="row-between" style="margin-bottom:24px">
+        <div class="pg-head" style="margin:0">
+          <h1>Reports</h1>
+          <p>Download and manage your analytics reports.</p>
+        </div>
+        <button class="btn btn-primary" style="font-size:13.5px">+ Generate Report</button>
+      </div>
+
+      <div class="card" style="padding:8px">
+        <div class="rrow">
+          <div class="rrow-icon" style="background:rgba(79,140,255,.1)">📊</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:640">Q2 Campaign Performance Report</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Generated May 12, 2025 · 4.2 MB · PDF</div></div>
+          <span class="pill pill-blue">Complete</span>
+          <button class="btn btn-secondary btn-xs">⬇ Download</button>
+        </div>
+        <div class="rrow">
+          <div class="rrow-icon" style="background:rgba(56,189,248,.1)">📈</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:640">Influencer ROI Analysis – May 2025</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Generated May 10, 2025 · 2.8 MB · PDF</div></div>
+          <span class="pill pill-blue">Complete</span>
+          <button class="btn btn-secondary btn-xs">⬇ Download</button>
+        </div>
+        <div class="rrow">
+          <div class="rrow-icon" style="background:rgba(245,158,11,.1)">🎯</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:640">Audience Demographics Deep Dive</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Generated May 7, 2025 · 6.1 MB · PDF</div></div>
+          <span class="pill pill-amber">Processing…</span>
+          <button class="btn btn-secondary btn-xs" style="opacity:.45;cursor:not-allowed">⬇ Download</button>
+        </div>
+        <div class="rrow">
+          <div class="rrow-icon" style="background:rgba(129,140,248,.1)">📋</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:640">Competitive Benchmarking Report</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Generated Apr 28, 2025 · 3.4 MB · PDF</div></div>
+          <span class="pill pill-blue">Complete</span>
+          <button class="btn btn-secondary btn-xs">⬇ Download</button>
+        </div>
+        <div class="rrow">
+          <div class="rrow-icon" style="background:rgba(239,68,68,.1)">🔍</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:640">Fake Follower Risk Assessment</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Generated Apr 20, 2025 · 1.9 MB · PDF</div></div>
+          <span class="pill pill-blue">Complete</span>
+          <button class="btn btn-secondary btn-xs">⬇ Download</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ SETTINGS ════════════════ -->
+    <section class="page" id="page-settings">
+      <div class="section-label">08. Settings</div>
+      <div class="pg-head">
+        <h1>Settings</h1>
+        <p>Manage your account preferences and integrations.</p>
+      </div>
+
+      <div class="g2" style="align-items:start;gap:20px">
+        <div>
+          <div class="card" style="padding:0 8px 8px">
+            <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.42);margin-bottom:4px">
+              <div style="font-size:14px;font-weight:720">Account</div>
+            </div>
+            <div class="srow"><div style="flex:1"><div class="srow-label">Full Name</div><div class="srow-sub">Kostya Volkov</div></div><button class="btn btn-secondary btn-xs">Edit</button></div>
+            <div class="srow"><div style="flex:1"><div class="srow-label">Email</div><div class="srow-sub">volkovkvk210707@gmail.com</div></div><button class="btn btn-secondary btn-xs">Edit</button></div>
+            <div class="srow"><div style="flex:1"><div class="srow-label">Plan</div><div class="srow-sub">Starter (Free)</div></div><button class="btn btn-primary btn-xs" onclick="go('pricing')">Upgrade</button></div>
+          </div>
+
+          <div class="card" style="padding:0 8px 8px;margin-top:18px">
+            <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.42);margin-bottom:4px">
+              <div style="font-size:14px;font-weight:720">Notifications</div>
+            </div>
+            <div class="srow">
+              <div style="flex:1"><div class="srow-label">Analysis complete</div><div class="srow-sub">Get notified when analysis finishes</div></div>
+              <label class="sw"><input type="checkbox" checked><span class="sw-track"></span></label>
+            </div>
+            <div class="srow">
+              <div style="flex:1"><div class="srow-label">Campaign alerts</div><div class="srow-sub">Alerts on performance changes</div></div>
+              <label class="sw"><input type="checkbox" checked><span class="sw-track"></span></label>
+            </div>
+            <div class="srow">
+              <div style="flex:1"><div class="srow-label">Weekly digest</div><div class="srow-sub">Summary email every Monday</div></div>
+              <label class="sw"><input type="checkbox"><span class="sw-track"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="padding:0 8px 8px">
+            <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.42);margin-bottom:4px">
+              <div style="font-size:14px;font-weight:720">Integrations</div>
+            </div>
+            <div class="srow"><span style="font-size:19px">🎵</span><div style="flex:1"><div class="srow-label">TikTok</div><div class="srow-sub">Connected</div></div><span class="pill pill-blue">Connected</span></div>
+            <div class="srow"><span style="font-size:19px">📸</span><div style="flex:1"><div class="srow-label">Instagram</div><div class="srow-sub">Not connected</div></div><button class="btn btn-secondary btn-xs">Connect</button></div>
+            <div class="srow"><span style="font-size:19px">▶️</span><div style="flex:1"><div class="srow-label">YouTube</div><div class="srow-sub">Not connected</div></div><button class="btn btn-secondary btn-xs">Connect</button></div>
+            <div class="srow"><span style="font-size:19px">🐦</span><div style="flex:1"><div class="srow-label">X (Twitter)</div><div class="srow-sub">Not connected</div></div><button class="btn btn-secondary btn-xs">Connect</button></div>
+          </div>
+
+          <div class="card" style="padding:0 8px 8px;margin-top:18px">
+            <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.42);margin-bottom:4px">
+              <div style="font-size:14px;font-weight:720">API Access</div>
+            </div>
+            <div class="srow"><div style="flex:1"><div class="srow-label">API Key</div><div class="srow-sub">iq_live_••••••••••••••••</div></div><button class="btn btn-secondary btn-xs">Reveal</button></div>
+            <div style="padding:12px 20px"><button class="btn btn-secondary btn-sm">Regenerate Key</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ PRICING ════════════════ -->
+    <section class="page" id="page-pricing">
+      <div class="section-label">09. Pricing</div>
+      <div style="text-align:center;padding:38px 0 0">
+        <h1 style="font-size:38px;font-weight:900;letter-spacing:-.04em">Choose Your Plan</h1>
+        <p style="font-size:16px;color:var(--t2);margin-top:10px">Start free and scale as you grow.</p>
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-top:22px">
+          <div class="toggle-row">
+            <button class="toggle-opt active" id="bMonthly" onclick="setBilling('monthly')">Monthly</button>
+            <button class="toggle-opt" id="bAnnual" onclick="setBilling('annual')">Annual</button>
+          </div>
+          <span class="save-tag">Save 20%</span>
+        </div>
+      </div>
+
+      <div class="g4" style="margin-top:30px">
+        <!-- Starter -->
+        <div class="card pc">
+          <div style="font-size:16px;font-weight:720;margin-bottom:3px">Starter</div>
+          <div style="font-size:13px;color:var(--t3);margin-bottom:18px">Perfect for getting started</div>
+          <div class="pc-price">$0<sub>/month</sub></div>
+          <ul class="pc-features">
+            <li>5 analyses per month</li>
+            <li>Basic analytics</li>
+            <li>Standard support</li>
+          </ul>
+          <button class="btn btn-secondary" style="width:100%;font-size:14px">Get Started</button>
+        </div>
+
+        <!-- Pro -->
+        <div class="card pc">
+          <div style="font-size:16px;font-weight:720;margin-bottom:3px">Pro</div>
+          <div style="font-size:13px;color:var(--t3);margin-bottom:18px">For growing marketers</div>
+          <div class="pc-price" id="proP">$29<sub>/month</sub></div>
+          <ul class="pc-features">
+            <li>50 analyses per month</li>
+            <li>Advanced analytics</li>
+            <li>Priority support</li>
+            <li>Export reports</li>
+          </ul>
+          <button class="btn btn-secondary" style="width:100%;font-size:14px">Get Started</button>
+        </div>
+
+        <!-- Business -->
+        <div class="card pc popular">
+          <div class="pc-badge">Most Popular</div>
+          <div style="font-size:16px;font-weight:720;margin-bottom:3px">Business</div>
+          <div style="font-size:13px;color:var(--t3);margin-bottom:18px">For teams and agencies</div>
+          <div class="pc-price" id="bizP">$79<sub>/month</sub></div>
+          <ul class="pc-features">
+            <li>200 analyses per month</li>
+            <li>AI advanced features</li>
+            <li>Team collaboration</li>
+            <li>White-label reports</li>
+            <li>SLA guarantee</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%;font-size:14px">Get Started</button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="card pc">
+          <div style="font-size:16px;font-weight:720;margin-bottom:3px">Enterprise</div>
+          <div style="font-size:13px;color:var(--t3);margin-bottom:18px">For large organizations</div>
+          <div class="pc-price">Custom</div>
+          <ul class="pc-features">
+            <li>Unlimited analyses</li>
+            <li>Custom integrations</li>
+            <li>Dedicated support</li>
+            <li>SLA guarantee</li>
+          </ul>
+          <button class="btn btn-secondary" style="width:100%;font-size:14px">Contact Sales</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   SCROLL-BASED NAVIGATION
+   All sections are stacked. Sidebar + topnav links smooth-scroll
+   to the target section. Scroll spy keeps the sidebar in sync.
+═══════════════════════════════════════════════════════════ */
+
+const PAGES = ['home','analyze','results','history','insights','campaigns','reports','settings','pricing'];
+const NAV_H = 64;
+
+/* ── Smooth-scroll to a section ───────────────────────────── */
+function go(page) {
+  const sec = document.getElementById('page-' + page);
+  if (!sec) return;
+  const top = sec.getBoundingClientRect().top + window.scrollY - NAV_H - 12;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+/* ── Sidebar click delegate ───────────────────────────────── */
+document.querySelector('.sidebar').addEventListener('click', e => {
+  const n = e.target.closest('[data-p]');
+  if (n) go(n.dataset.p);
+});
+
+/* ── Scroll spy ───────────────────────────────────────────── */
+function updateActive() {
+  let current = 'home';
+  PAGES.forEach(id => {
+    const sec = document.getElementById('page-' + id);
+    if (!sec) return;
+    const top = sec.getBoundingClientRect().top;
+    if (top <= NAV_H + 80) current = id;
+  });
+  document.querySelectorAll('.nav-item[data-p]').forEach(n => {
+    n.classList.toggle('active', n.dataset.p === current);
+  });
+}
+window.addEventListener('scroll', updateActive, { passive: true });
+
+/* ── Reveal-on-scroll (IntersectionObserver) ──────────────── */
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      /* animate arcs/bars when section enters viewport */
+      animateArcsIn(e.target);
+      animateBarsIn(e.target);
+    }
+  });
+}, { threshold: 0.07 });
+
+document.querySelectorAll('.page').forEach(sec => revealObs.observe(sec));
+
+/* ── Analysis flow ────────────────────────────────────────── */
+function startAnalysis() {
+  const ov = document.getElementById('aiOverlay');
+  ov.classList.add('show');
+  setTimeout(() => {
+    ov.classList.remove('show');
+    go('results');
+  }, 2400);
+}
+
+/* ── Insights tabs ────────────────────────────────────────── */
+function switchTab(btn) {
+  document.querySelectorAll('#insTabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── Billing toggle ───────────────────────────────────────── */
+function setBilling(type) {
+  const m = document.getElementById('bMonthly');
+  const a = document.getElementById('bAnnual');
+  const p = document.getElementById('proP');
+  const b = document.getElementById('bizP');
+  if (type === 'monthly') {
+    m.classList.add('active'); a.classList.remove('active');
+    p.innerHTML = '$29<sub>/month</sub>';
+    b.innerHTML = '$79<sub>/month</sub>';
+  } else {
+    a.classList.add('active'); m.classList.remove('active');
+    p.innerHTML = '$23<sub>/month</sub>';
+    b.innerHTML = '$63<sub>/month</sub>';
+  }
+}
+
+/* ── Arc animation ────────────────────────────────────────── */
+function animateArcsIn(root) {
+  (root || document).querySelectorAll('.arc').forEach(arc => {
+    const target = arc.getAttribute('stroke-dashoffset');
+    const total  = arc.getAttribute('stroke-dasharray');
+    arc.setAttribute('stroke-dashoffset', total);
+    arc.style.transition = 'none';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      arc.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';
+      arc.setAttribute('stroke-dashoffset', target);
+    }));
+  });
+}
+
+/* ── Progress bars ────────────────────────────────────────── */
+function animateBarsIn(root) {
+  (root || document).querySelectorAll('.pbar-fill[data-w]').forEach(bar => {
+    const w = bar.dataset.w + '%';
+    bar.style.width = '0%';
+    bar.style.transition = 'none';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bar.style.transition = 'width 1s cubic-bezier(.4,0,.2,1)';
+      bar.style.width = w;
+    }));
+  });
+}
+
+/* ── Glass cursor tilt ────────────────────────────────────── */
+let tiltRAF;
+document.addEventListener('mousemove', e => {
+  cancelAnimationFrame(tiltRAF);
+  tiltRAF = requestAnimationFrame(() => {
+    document.querySelectorAll('.card').forEach(card => {
+      const r = card.getBoundingClientRect();
+      if (r.top > window.innerHeight || r.bottom < 0) return;
+      const cx = (e.clientX - r.left - r.width  / 2) / r.width;
+      const cy = (e.clientY - r.top  - r.height / 2) / r.height;
+      card.style.transform = `perspective(900px) rotateX(${-cy * 3}deg) rotateY(${cx * 3}deg) translateY(-2px)`;
+    });
+  });
+});
+document.addEventListener('mouseleave', () => {
+  document.querySelectorAll('.card').forEach(c => c.style.transform = '');
+});
+
+/* ── Init: make first section visible immediately ─────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const first = document.getElementById('page-home');
+  if (first) {
+    first.classList.add('visible');
+    setTimeout(() => { animateArcsIn(first); animateBarsIn(first); }, 300);
+  }
+  updateActive();
+});
+</script>
+</body>
+</html>

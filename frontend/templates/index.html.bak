@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>InfluenceIQ — Predict. Analyze. Grow.</title>
+<link rel="stylesheet" href="/static/css/style.css?v=50">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.2 5.4 5.8.8-4.2 4.1 1 5.7L10 15.3l-4.8 2.7 1-5.7L2 8.2l5.8-.8L10 2z" fill="#fff"/></svg></div>
+    <span class="sb-logo-text">InfluenceIQ</span>
+  </div>
+  <div class="sb-nav">
+    <button class="sb-item active" data-view="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9M5 10v10h5v-5h4v5h5V10"/></svg>Home
+    </button>
+    <button class="sb-item" data-view="analyze">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Analyze
+    </button>
+    <button class="sb-item" data-view="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History
+    </button>
+    <button class="sb-item" data-view="insights">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>Insights
+    </button>
+    <button class="sb-item" data-view="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Campaigns
+    </button>
+    <button class="sb-item" data-view="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Reports
+    </button>
+    <button class="sb-item" onclick="openSettings()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
+    </button>
+  </div>
+  <div class="sb-upgrade">
+    <div class="sb-upgrade-title">Upgrade Plan</div>
+    <div class="sb-upgrade-desc">Unlock advanced analytics and reports.</div>
+    <button class="sb-upgrade-btn" data-view="pricing">Upgrade →</button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-brand-mark"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.2 5.4 5.8.8-4.2 4.1 1 5.7L10 15.3l-4.8 2.7 1-5.7L2 8.2l5.8-.8L10 2z" fill="#fff"/></svg></div>
+      InfluenceIQ
+    </div>
+    <nav class="tb-nav">
+      <a data-view="home">Product</a>
+      <a data-view="insights">Features</a>
+      <a data-view="pricing">Pricing</a>
+      <a data-view="history">Resources</a>
+      <a data-view="home">About</a>
+    </nav>
+    <div class="tb-right">
+      <button class="tb-icon" id="themeBtn">☀️</button>
+      <button class="tb-icon" id="settingsBtn" onclick="openSettings()">⚙</button>
+      <div class="tb-avatar">IQ</div>
+    </div>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="view active" id="view-home">
+    <div class="home-layout">
+
+      <!-- Hero panel -->
+      <div class="hero-panel">
+        <div class="hero-badge">⚡ AI-Powered Influencer Analytics</div>
+        <h1 class="hero-h">Predict.<br>Analyze.<br><span class="blue">Grow.</span></h1>
+        <p class="hero-p">AI-powered influencer analytics that helps you predict ROI, forecast sales, and scale with confidence.</p>
+        <div class="hero-btns">
+          <button class="btn btn-blue btn-sm" data-view="analyze">Start Free Analysis</button>
+          <button class="btn btn-ghost btn-sm" data-view="insights">View Demo</button>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-lbl">Trusted by 1,200+ teams</div>
+          <div class="trust-logos">
+            <span class="trust-logo">stripe</span>
+            <span class="trust-logo">shopify</span>
+            <span class="trust-logo">notion</span>
+            <span class="trust-logo">discord</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="gc p24" style="padding:20px">
+        <div class="dash-head">
+          <div class="dash-title">Dashboard</div>
+          <span style="color:var(--ink-35);font-size:16px;cursor:pointer">···</span>
+        </div>
+        <div style="font-size:11px;color:var(--ink-35);margin-bottom:11px">Overview</div>
+        <div class="ov-grid">
+          <div class="ov-card"><div class="ov-lbl">Total Analyses</div><div class="ov-val">24</div><div class="ov-change pos">+12% this month</div></div>
+          <div class="ov-card"><div class="ov-lbl">Average ROI</div><div class="ov-val blue">215%</div><div class="ov-change pos">Very High</div></div>
+          <div class="ov-card"><div class="ov-lbl">Success Rate</div><div class="ov-val green">76%</div><div class="ov-change pos">Very Good</div></div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-head"><span>ROI Over Time</span></div>
+          <div class="chart-h"><canvas id="homeChart"></canvas><div class="chart-badge">May 12<br>215%</div></div>
+        </div>
+        <div class="recent-head">
+          <span>Recent Analyses</span>
+          <button class="btn btn-ghost btn-sm" data-view="history">View All</button>
+        </div>
+        <div class="recent-rows" id="recent-rows">
+          <div class="rrow"><div class="rav">@c</div><div style="flex:1"><div class="rname">@creator</div><div class="rsub">100K Followers</div></div><span class="rscore">8.6</span><span class="rroi">215%</span><span class="rprofit">$4,320</span><span class="rrec">Good to Go</span></div>
+        </div>
+      </div>
+
+      <!-- Right mini -->
+      <div class="mini-stack">
+        <div class="mini-gc">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <div class="tb-brand-mark" style="width:24px;height:24px;border-radius:7px"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.2 5.4 5.8.8-4.2 4.1 1 5.7L10 15.3l-4.8 2.7 1-5.7L2 8.2l5.8-.8L10 2z" fill="#fff"/></svg></div>
+            <span style="font-size:.8rem;font-weight:700">InfluenceIQ</span>
+            <div class="tb-avatar" style="margin-left:auto;width:26px;height:26px;font-size:10px">IQ</div>
+          </div>
+          <div style="font-size:10.5px;color:var(--ink-35);margin-bottom:10px">Overview</div>
+          <div class="ov-card" style="margin-bottom:8px"><div class="ov-lbl">Total Analyses</div><div class="ov-val" style="font-size:1.1rem">24</div><div class="ov-change pos">+12%</div></div>
+          <div class="ov-card" style="margin-bottom:8px"><div class="ov-lbl">Average ROI</div><div class="ov-val blue" style="font-size:1.1rem">215%</div><div class="ov-change pos">Very High</div></div>
+          <div class="ov-card"><div class="ov-lbl">Success Rate</div><div class="ov-val green" style="font-size:1.1rem">76%</div><div class="ov-change pos">Very Good</div></div>
+        </div>
+        <div class="mini-gc">
+          <div style="font-size:11px;font-weight:600;color:var(--ink-50);margin-bottom:10px">Recent Analyses</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="rrow" style="padding:8px 10px"><div class="rav" style="width:26px;height:26px;font-size:9px">@c</div><div style="flex:1"><div class="rname" style="font-size:11.5px">@creator</div></div><span class="rscore" style="font-size:11px">8.6</span></div>
+            <div class="rrow" style="padding:8px 10px"><div class="rav" style="width:26px;height:26px;font-size:9px">@2</div><div style="flex:1"><div class="rname" style="font-size:11.5px">@influencer2</div></div><span class="rscore" style="font-size:11px">7.4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ANALYZE ══ -->
+  <div class="view" id="view-analyze">
+    <div class="page-head">
+      <h2 class="page-title">Analyze Any Influencer</h2>
+      <p class="page-sub">Enter influencer details and let our AI do the rest.</p>
+    </div>
+    <div class="analyze-grid">
+      <div class="gc" style="padding:26px">
+        <form id="form">
+          <div class="fg">
+            <label>TikTok Profile URL</label>
+            <div class="irow">
+              <input type="url" id="blogger-link" name="link" placeholder="https://www.tiktok.com/@creator">
+              <button type="button" id="fetch-btn" class="btn-load">Load</button>
+            </div>
+            <div id="fetch-status" class="status-msg hidden"></div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Platform</label><select name="platform" id="field-platform"><option value="tiktok">TikTok</option><option value="telegram">Telegram</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option></select></div>
+            <div class="fg"><label>Avg Views</label><input type="number" name="views" id="field-views" placeholder="auto" required min="1"></div>
+            <div class="fg"><label>Avg Likes</label><input type="number" name="likes" id="field-likes" placeholder="auto" required min="0"></div>
+            <div class="fg"><label>Followers</label><input type="number" name="followers" id="field-followers" placeholder="auto" min="0"></div>
+          </div>
+          <div class="fdiv"></div>
+          <div class="row2">
+            <div class="fg"><label>Ad Spend</label><input type="number" name="ad_price" placeholder="$500" required min="1" step=".01"></div>
+            <div class="fg"><label>Product Price</label><input type="number" name="product_price" placeholder="$49.99" required min="1" step=".01"></div>
+            <div class="fg"><label>Campaign Type</label><select name="ad_format"><option value="video">Product Promotion</option><option value="post">Post</option><option value="story">Story / Reels</option></select></div>
+            <div class="fg"><label>Account Size</label><select name="level"><option value="beginner">Nano (0–10K)</option><option value="medium" selected>100K – 500K</option><option value="strong">Macro (500K+)</option></select></div>
+          </div>
+          <div class="fdiv"></div>
+          <div class="row2">
+            <div class="fg"><label>Your Followers</label><input type="number" name="acc_followers" placeholder="8500" required min="0"></div>
+            <div class="fg"><label>Product Type</label><select name="product_type"><option value="course">Course</option><option value="product">Product</option><option value="service">Service</option><option value="subscription">Subscription</option></select></div>
+          </div>
+          <div id="manual-hint" class="hint-manual hidden">TikTok & Instagram — enter data manually</div>
+          <button type="submit" class="btn btn-blue btn-full btn-lg" id="submit-btn" style="margin-top:6px;border-radius:18px">Analyze Influencer →</button>
+        </form>
+      </div>
+      <div>
+        <div class="gc" style="padding:24px;margin-bottom:12px">
+          <div class="ai-head">Our AI will analyze:</div>
+          <div class="ai-checks">
+            <div class="ai-check-row"><span class="check-ico">✓</span>Audience quality & engagement</div>
+            <div class="ai-check-row"><span class="check-ico">✓</span>Follower growth potential</div>
+            <div class="ai-check-row"><span class="check-ico">✓</span>Sales & revenue forecast</div>
+            <div class="ai-check-row"><span class="check-ico">✓</span>ROI & profit estimation</div>
+            <div class="ai-check-row"><span class="check-ico">✓</span>Risk detection & authenticity</div>
+          </div>
+          <div class="ai-note">Analysis takes ~30–60 seconds</div>
+        </div>
+        <div class="gc" style="padding:20px;text-align:center">
+          <div class="glass-cube">🔮</div>
+          <div style="font-size:11px;color:var(--ink-35);margin-top:10px">AI-powered analysis</div>
+        </div>
+      </div>
+    </div>
+    <div id="result-section" style="margin-top:16px"></div>
+  </div>
+
+  <!-- ══ HISTORY ══ -->
+  <div class="view" id="view-history">
+    <div class="page-head">
+      <h2 class="page-title">Analysis History</h2>
+      <p class="page-sub">View all your past analyses and results.</p>
+    </div>
+    <div class="hist-bar">
+      <div class="search-box">🔍 <input type="text" id="hist-search" placeholder="Search analyses..."></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="seg" id="hist-filter">
+          <button class="seg-b on" data-f="all">All</button>
+          <button class="seg-b" data-f="take">Good to Go</button>
+          <button class="seg-b" data-f="risky">Caution</button>
+          <button class="seg-b" data-f="skip">Not Rec.</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="exportBtn">↓ Export</button>
+      </div>
+    </div>
+    <div class="gc" style="overflow:hidden">
+      <table class="htable">
+        <thead><tr><th>Influencer</th><th>Date</th><th>Overall Score</th><th>ROI</th><th>Recommendation</th><th>Actions</th></tr></thead>
+        <tbody id="hist-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:var(--ink-35)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ INSIGHTS ══ -->
+  <div class="view" id="view-insights">
+    <div class="page-head">
+      <h2 class="page-title">Insights</h2>
+      <p class="page-sub">Deep insights and analytics to help you make better decisions.</p>
+    </div>
+    <div class="tabs" id="itabs">
+      <button class="tab on">Audience Quality</button>
+      <button class="tab">Engagement</button>
+      <button class="tab">Growth Potential</button>
+      <button class="tab">Audience Demographics</button>
+      <button class="tab">Risk Analysis</button>
+    </div>
+    <div class="ins3">
+      <div class="gc" style="padding:18px">
+        <div class="mlbl" style="margin-bottom:12px">Audience Quality Score</div>
+        <div class="ins-score-row">
+          <div class="dw" style="width:80px;height:80px">
+            <svg width="80" height="80"><circle cx="40" cy="40" r="33" fill="none" stroke="var(--ink-08)" stroke-width="8"/><circle cx="40" cy="40" r="33" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round" stroke-dasharray="207" stroke-dashoffset="37" style="transform:rotate(-90deg);transform-origin:center"/></svg>
+            <div class="di"><b>82</b><small>/100</small></div>
+          </div>
+          <div><div class="mtag green" style="font-size:13px;margin-bottom:5px">Very Good</div><div style="font-size:11px;color:var(--ink-35);line-height:1.5">High quality audience with low fake follower percentage.</div></div>
+        </div>
+      </div>
+      <div class="gc" style="padding:18px">
+        <div class="mlbl" style="margin-bottom:10px">Follower Authenticity</div>
+        <div class="mbig green">91%</div>
+        <div class="mtag green">Real Followers</div>
+        <div style="margin-top:13px">
+          <div class="bk-row" style="margin-bottom:6px"><span class="bk-lbl" style="font-size:11px">Real Followers</span><div class="bk-track"><div class="bk-fill green" style="width:91%"></div></div><span class="bk-pct">91%</span></div>
+          <div style="font-size:10.5px;color:var(--ink-35);margin-top:5px">9% Potentially Fake</div>
+        </div>
+      </div>
+      <div class="gc" style="padding:18px">
+        <div class="mlbl" style="margin-bottom:10px">Engagement Quality</div>
+        <div class="mbig blue">7.6%</div>
+        <div class="mtag green">Excellent</div>
+        <div class="chart-h" style="height:55px;margin-top:11px"><canvas id="engChart"></canvas></div>
+      </div>
+    </div>
+    <div class="gc" style="padding:22px;margin-bottom:12px">
+      <div style="font-size:.9rem;font-weight:700;margin-bottom:15px">Key Insights</div>
+      <div class="ai-checks">
+        <div class="ai-check-row"><span class="check-ico">✓</span>Excellent audience authenticity</div>
+        <div class="ai-check-row"><span class="check-ico">✓</span>High engagement rate for niche</div>
+        <div class="ai-check-row"><span class="check-ico">✓</span>Good follower growth potential</div>
+        <div class="ai-check-row"><span class="check-ico">✓</span>Low risk of fake engagement</div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-ghost btn-sm">View Full Report →</button></div>
+    </div>
+    <div class="gc" style="padding:22px">
+      <div style="font-size:.9rem;font-weight:700;margin-bottom:15px">Audience Quality Breakdown</div>
+      <div class="bk-list">
+        <div class="bk-row"><span class="bk-lbl">Real Followers</span><div class="bk-track"><div class="bk-fill green" style="width:91%"></div></div><span class="bk-pct">91%</span></div>
+        <div class="bk-row"><span class="bk-lbl">Good Followers</span><div class="bk-track"><div class="bk-fill" style="width:84%"></div></div><span class="bk-pct">84%</span></div>
+        <div class="bk-row"><span class="bk-lbl">High Quality</span><div class="bk-track"><div class="bk-fill green" style="width:82%"></div></div><span class="bk-pct">82%</span></div>
+        <div class="bk-row"><span class="bk-lbl">Medium Quality</span><div class="bk-track"><div class="bk-fill" style="width:15%"></div></div><span class="bk-pct">15%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PRICING ══ -->
+  <div class="view" id="view-pricing">
+    <div class="page-head" style="text-align:center">
+      <h2 class="page-title">Choose Your Plan</h2>
+      <p class="page-sub">Start free and scale as you grow.</p>
+    </div>
+    <div class="price-toggle">
+      <button class="pt on" id="pt-m">Monthly</button>
+      <button class="pt" id="pt-a">Annual</button>
+      <span class="save-tag">Save 20%</span>
+    </div>
+    <div class="pgrid">
+      <div class="pcard">
+        <div class="pname">Starter</div>
+        <div class="pamt"><span class="pamt-val" data-m="0" data-a="0">$0</span><small>/month</small></div>
+        <div class="pdesc">Perfect for getting started</div>
+        <ul class="pfeats"><li>5 analyses per month</li><li>Basic analytics</li><li>Standard support</li></ul>
+        <button class="btn btn-ghost btn-full">Get Started</button>
+      </div>
+      <div class="pcard">
+        <div class="pname">Pro</div>
+        <div class="pamt"><span class="pamt-val" data-m="29" data-a="23">$29</span><small>/month</small></div>
+        <div class="pdesc">For growing marketers</div>
+        <ul class="pfeats"><li>50 analyses per month</li><li>Advanced analytics</li><li>Priority support</li><li>Export reports</li></ul>
+        <button class="btn btn-ghost btn-full">Get Started</button>
+      </div>
+      <div class="pcard pop">
+        <div class="pop-badge">MOST POPULAR</div>
+        <div class="pname">Business</div>
+        <div class="pamt"><span class="pamt-val" data-m="79" data-a="63">$79</span><small>/month</small></div>
+        <div class="pdesc">For teams and agencies</div>
+        <ul class="pfeats"><li>200 analyses per month</li><li>AI advanced features</li><li>Team collaboration</li><li>White-label reports</li></ul>
+        <button class="btn btn-blue btn-full">Get Started</button>
+      </div>
+      <div class="pcard">
+        <div class="pname">Enterprise</div>
+        <div class="pamt" style="font-size:1.6rem;margin-bottom:6px">Custom</div>
+        <div class="pdesc">For large organizations</div>
+        <ul class="pfeats"><li>Unlimited analyses</li><li>Custom integrations</li><li>Dedicated support</li><li>SLA guarantee</li></ul>
+        <button class="btn btn-ghost btn-full">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script src="/static/js/app.js?v=50"></script>
+<script src="/static/js/settings.js?v=50"></script>
+</body>
+</html>
