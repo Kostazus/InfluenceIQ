@@ -31,6 +31,19 @@ async def init_db():
         """)
         await db.commit()
 
+        # Migration: add columns if they don't exist (for existing databases)
+        try:
+            await db.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
+            await db.commit()
+        except Exception:
+            pass  # column already exists
+
+        try:
+            await db.execute("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))")
+            await db.commit()
+        except Exception:
+            pass  # column already exists
+
         # Make first user admin automatically
         await db.execute("UPDATE users SET is_admin=1 WHERE id=1 AND is_admin=0")
         await db.commit()
