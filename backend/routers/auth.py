@@ -19,9 +19,14 @@ async def register(data: UserRegister):
             raise HTTPException(status_code=400, detail="Email уже занят")
 
         hashed = hash_password(data.password)
+
+        # Check if this is the first user — auto-make admin
+        count = (await (await db.execute("SELECT COUNT(*) FROM users")).fetchone())[0]
+        is_admin = 1 if count == 0 else 0
+
         cursor = await db.execute(
-            "INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)",
-            (data.email, hashed, data.name)
+            "INSERT INTO users (email, password_hash, name, is_admin) VALUES (?, ?, ?, ?)",
+            (data.email, hashed, data.name, is_admin)
         )
         await db.commit()
         user_id = cursor.lastrowid
