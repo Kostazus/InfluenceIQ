@@ -19,6 +19,16 @@ async def init_db():
         """)
         await db.commit()
 
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                email         TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                name          TEXT NOT NULL
+            )
+        """)
+        await db.commit()
+
 
 async def save_forecast(platform: str, views: int, ad_price: float, result: dict):
     async with aiosqlite.connect(DB_PATH) as db:

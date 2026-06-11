@@ -666,6 +666,10 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
   .rep-row { flex-wrap: wrap; }
 }
 
+/* Auth modal */
+#authOverlay { transition: opacity .25s; }
+#authOverlay.open { display: flex !important; }
+
 /* Hamburger button (hidden on desktop) */
 .nav-hamburger {
   display: none;
@@ -724,6 +728,16 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <button class="nav-btn" onclick="openSettings()" title="Settings">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+    <!-- Auth button -->
+    <button id="authBtn" class="btn-dark btn-sm" onclick="openAuthModal()" style="margin-left:6px">Sign in</button>
+    <div id="userChip" style="display:none;align-items:center;gap:8px;margin-left:6px">
+      <div id="userAvatar" style="width:30px;height:30px;border-radius:50%;background:var(--t1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer" onclick="toggleUserMenu()"></div>
+      <div id="userMenu" style="display:none;position:absolute;top:calc(var(--nav-h) + 6px);right:16px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.12);min-width:180px;z-index:300">
+        <div id="userMenuName" style="font-size:13px;font-weight:600;padding:8px 12px;color:var(--t1)"></div>
+        <div id="userMenuEmail" style="font-size:12px;color:var(--t3);padding:0 12px 8px;border-bottom:1px solid var(--border)"></div>
+        <button onclick="logout()" style="width:100%;text-align:left;padding:10px 12px;font-size:13px;font-weight:500;color:#c0392b;background:none;border:none;cursor:pointer;border-radius:8px;font-family:inherit;margin-top:4px" onmouseover="this.style.background='rgba(192,57,43,.06)'" onmouseout="this.style.background='none'">Sign out</button>
+      </div>
+    </div>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" title="Menu">
       <svg id="hamburgerIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
@@ -738,6 +752,34 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
   <a onclick="scrollTo('campaigns');closeMobileNav()">Campaigns</a>
   <a onclick="scrollTo('reports');closeMobileNav()">Reports</a>
   <a onclick="scrollTo('settings');closeMobileNav()">Settings</a>
+</div>
+
+<!-- ══ AUTH MODAL ════════════════════════════════════════ -->
+<div id="authOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9100;align-items:center;justify-content:center;padding:20px" onclick="closeAuthModal(event)">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.22)" onclick="event.stopPropagation()">
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--border)">
+      <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s">Sign in</button>
+      <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s">Create account</button>
+    </div>
+    <div style="padding:28px">
+      <!-- Register name field (hidden on login) -->
+      <div id="fieldName" style="display:none;margin-bottom:14px">
+        <label class="lbl">Your name</label>
+        <input type="text" id="authName" placeholder="Kostya Volkov">
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="lbl">Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com">
+      </div>
+      <div style="margin-bottom:20px">
+        <label class="lbl">Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••">
+      </div>
+      <div id="authError" style="display:none;font-size:13px;color:#c0392b;background:rgba(192,57,43,.08);padding:10px 14px;border-radius:10px;margin-bottom:16px"></div>
+      <button id="authSubmit" onclick="submitAuth()" class="btn-dark" style="width:100%;padding:14px;font-size:15px;border-radius:12px">Sign in</button>
+    </div>
+  </div>
 </div>
 
 <div id="app">
@@ -1659,6 +1701,134 @@ function initScrollReveal() {
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => io2.observe(el));
 }
+
+/* ── AUTH ──────────────────────────────────────────────── */
+let authMode = 'login';
+
+function openAuthModal() {
+  switchAuthTab('login');
+  document.getElementById('authOverlay').style.display = 'flex';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authName').value = '';
+  document.getElementById('authError').style.display = 'none';
+  setTimeout(() => document.getElementById('authEmail').focus(), 100);
+}
+
+function closeAuthModal(e) {
+  if (!e || e.target === document.getElementById('authOverlay')) {
+    document.getElementById('authOverlay').style.display = 'none';
+  }
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('fieldName').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSubmit').textContent = isLogin ? 'Sign in' : 'Create account';
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('tabLogin').style.cssText  = isLogin
+    ? 'flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s'
+    : 'flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s';
+  document.getElementById('tabRegister').style.cssText = !isLogin
+    ? 'flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s'
+    : 'flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s';
+}
+
+async function submitAuth() {
+  const email    = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const name     = document.getElementById('authName').value.trim();
+  const errEl    = document.getElementById('authError');
+  const btn      = document.getElementById('authSubmit');
+
+  if (!email || !password) { showAuthError('Fill in all fields'); return; }
+  if (authMode === 'register' && !name) { showAuthError('Enter your name'); return; }
+
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try {
+    const url  = authMode === 'login' ? '/api/login' : '/api/register';
+    const body = authMode === 'login' ? { email, password } : { email, password, name };
+    const res  = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) { showAuthError(data.detail || 'Error'); return; }
+
+    localStorage.setItem('iq_token', data.access_token);
+    document.getElementById('authOverlay').style.display = 'none';
+    await loadUser();
+    toast('Welcome! 👋');
+  } catch(e) {
+    showAuthError('Network error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account';
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function loadUser() {
+  const token = localStorage.getItem('iq_token');
+  if (!token) return;
+  try {
+    const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { logout(); return; }
+    const user = await res.json();
+    setUserUI(user);
+  } catch(e) { /* offline */ }
+}
+
+function setUserUI(user) {
+  document.getElementById('authBtn').style.display = 'none';
+  const chip = document.getElementById('userChip');
+  chip.style.display = 'flex';
+  const initials = user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userMenuName').textContent = user.name;
+  document.getElementById('userMenuEmail').textContent = user.email;
+  // Update settings name/email
+  const n = document.getElementById('acc-name'); if(n) n.textContent = user.name;
+  const e = document.getElementById('acc-email'); if(e) e.textContent = user.email;
+}
+
+function toggleUserMenu() {
+  const m = document.getElementById('userMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+
+function logout() {
+  localStorage.removeItem('iq_token');
+  document.getElementById('authBtn').style.display = '';
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('userMenu').style.display = 'none';
+  toast('Signed out');
+}
+
+// Close user menu on outside click
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('userMenu');
+  const chip = document.getElementById('userChip');
+  if (menu && chip && !chip.contains(e.target)) menu.style.display = 'none';
+});
+
+// Check auth on page load
+document.addEventListener('DOMContentLoaded', loadUser);
+
+// Enter key submits auth form
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.getElementById('authOverlay').style.display === 'flex') submitAuth();
+  if (e.key === 'Escape') closeAuthModal();
+});
 </script>
 
 <!-- ══ BACKEND API LOGIC ══════════════════════════════════ -->
