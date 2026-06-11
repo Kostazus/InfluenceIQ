@@ -252,7 +252,9 @@ tbody tr:hover td { background: rgba(0,0,0,.018); }
 <script>
 async function authFetch(url) {
   const res = await fetch(url);
-  return res.json();
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch(e) { throw new Error('Bad response (' + res.status + '): ' + text.slice(0, 200)); }
 }
 
 /* ── PAGES ── */
@@ -294,7 +296,9 @@ async function loadDashboard() {
         <div class="stat-sub">Last 7 days</div>
       </div>
     `;
-  } catch(e) {}
+  } catch(e) {
+    document.getElementById('statsGrid').innerHTML = '<div style="padding:20px;color:red;grid-column:1/-1">Stats error: ' + e.message + '</div>';
+  }
 }
 
 /* ── USERS ── */
@@ -323,7 +327,9 @@ async function loadUsers() {
         <td>${!u.is_admin ? `<button class="btn-del" onclick="deleteUser(${u.id}, this)" title="Delete">✕</button>` : ''}</td>
       </tr>
     `).join('');
-  } catch(e) {}
+  } catch(e) {
+    document.getElementById('usersBody').innerHTML = '<tr><td colspan="4" style="padding:20px;color:red">Users error: ' + e.message + '</td></tr>';
+  }
 }
 
 async function deleteUser(id, btn) {
@@ -374,7 +380,9 @@ async function loadHistory() {
       </tr>`;
     }).join('');
 
-  } catch(e) {}
+  } catch(e) {
+    document.getElementById('historyBody').innerHTML = '<tr><td colspan="6" style="padding:20px;color:red">History error: ' + e.message + '</td></tr>';
+  }
 }
 
 /* ── INIT ── */
