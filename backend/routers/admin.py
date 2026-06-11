@@ -32,9 +32,13 @@ async def admin_stats():
 async def admin_users():
     async with aiosqlite.connect(DB_PATH) as db:
         db.row_factory = aiosqlite.Row
-        cursor = await db.execute(
-            "SELECT id, email, name, is_admin, created_at FROM users ORDER BY id DESC"
-        )
+        # Get column names to handle missing created_at
+        col_cursor = await db.execute("PRAGMA table_info(users)")
+        cols = [row[1] for row in await col_cursor.fetchall()]
+        has_created_at = "created_at" in cols
+
+        query = "SELECT id, email, name, is_admin" + (", created_at" if has_created_at else "") + " FROM users ORDER BY id DESC"
+        cursor = await db.execute(query)
         rows = await cursor.fetchall()
         users = []
         for r in rows:
@@ -43,7 +47,7 @@ async def admin_users():
                 "email": r["email"],
                 "name": r["name"],
                 "is_admin": bool(r["is_admin"]),
-                "created_at": r["created_at"] or "—",
+                "created_at": (r["created_at"] if has_created_at else None) or "—",
             })
     return users
 
