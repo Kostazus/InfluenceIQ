@@ -271,6 +271,7 @@ function showPage(name) {
 async function loadDashboard() {
   try {
     const s = await authFetch('/api/admin/stats');
+    if (s.detail) { document.getElementById('statsGrid').innerHTML = '<div style="padding:20px;color:red">Stats error: ' + s.detail + '</div>'; return; }
     document.getElementById('statsGrid').innerHTML = `
       <div class="stat-card">
         <div class="stat-label">Total users</div>
@@ -300,6 +301,7 @@ async function loadDashboard() {
 async function loadUsers() {
   try {
     const users = await authFetch('/api/admin/users');
+    if (!Array.isArray(users)) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="4" style="padding:20px;color:red">Error: ' + JSON.stringify(users) + '</td></tr>'; return; }
     document.getElementById('usersCount').textContent = users.length + ' total';
     if (!users.length) {
       document.getElementById('usersBody').innerHTML = '<tr><td colspan="4" class="empty">No users yet</td></tr>';
