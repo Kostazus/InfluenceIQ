@@ -45,8 +45,11 @@ async def init_db():
             pass  # column already exists
 
         # Make first user admin automatically
-        await db.execute("UPDATE users SET is_admin=1 WHERE id=1 AND is_admin=0")
-        await db.commit()
+        try:
+            await db.execute("UPDATE users SET is_admin=1 WHERE id=1 AND is_admin=0")
+            await db.commit()
+        except Exception:
+            pass
 
 
 async def save_forecast(platform: str, views: int, ad_price: float, result: dict):
