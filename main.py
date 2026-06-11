@@ -9,6 +9,7 @@ load_dotenv()
 
 from backend.routers import forecast, stats
 from backend.routers.history import router as history_router
+from backend.routers.auth import router as auth_router
 from backend.storage.db import init_db
 
 
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(forecast.router)
 app.include_router(history_router)
 app.include_router(stats.router)
+app.include_router(auth_router)
 
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
