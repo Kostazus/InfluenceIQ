@@ -451,12 +451,26 @@ select {
 .tsc-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 14px; }
 .tsc-val { font-size: 24px; font-weight: 700; color: #fff; }
 
+/* ── MODAL OVERLAY BASE ── */
+@keyframes modalIn  { from { opacity:0; transform:scale(.94) translateY(18px); } to { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes modalOut { from { opacity:1; transform:scale(1) translateY(0); } to { opacity:0; transform:scale(.94) translateY(18px); } }
+@keyframes overlayIn  { from { opacity:0; } to { opacity:1; } }
+
 /* ── SETTINGS MODAL ── */
-.sov { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9000; opacity: 0; pointer-events: none; transition: opacity .3s; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.sov.on { opacity: 1; pointer-events: all; }
-.smodal { background: #fff; border-radius: 20px; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,.22); transform: scale(.95) translateY(12px); transition: transform .35s cubic-bezier(.16,1,.3,1); }
-.sov.on .smodal { transform: scale(1) translateY(0); }
-.sh { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 0; position: sticky; top: 0; background: #fff; z-index: 1; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+.sov { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 9000; opacity: 0; pointer-events: none; transition: opacity .28s, background .28s; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+.sov.on { opacity: 1; pointer-events: all; background: rgba(0,0,0,.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.smodal {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: saturate(200%) blur(28px);
+  -webkit-backdrop-filter: saturate(200%) blur(28px);
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 22px; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 72px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.9) inset;
+  opacity: 0; transform: scale(.94) translateY(18px);
+  transition: opacity .32s cubic-bezier(.16,1,.3,1), transform .32s cubic-bezier(.16,1,.3,1);
+}
+.sov.on .smodal { opacity: 1; transform: scale(1) translateY(0); }
+.sh { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 0; position: sticky; top: 0; background: rgba(255,255,255,.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1; border-bottom: 1px solid rgba(0,0,0,.07); padding-bottom: 16px; border-radius: 22px 22px 0 0; }
 .sh-l { display: flex; align-items: center; gap: 11px; }
 .sh-ic { font-size: 20px; }
 .sh-title { font-size: 16px; font-weight: 700; color: var(--t1); }
@@ -499,7 +513,7 @@ select {
 .tog-tr::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .25s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
 .tog input:checked ~ .tog-tr { background: var(--t1); }
 .tog input:checked ~ .tog-tr::before { transform: translateX(18px); }
-.sfoot { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid var(--border); position: sticky; bottom: 0; background: #fff; }
+.sfoot { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid rgba(0,0,0,.07); position: sticky; bottom: 0; background: rgba(255,255,255,.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 0 0 22px 22px; }
 .sver { font-size: 12px; color: var(--t3); }
 
 /* Reports rows */
@@ -676,8 +690,21 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 }
 
 /* Auth modal */
-#authOverlay { transition: opacity .25s; }
-#authOverlay.open { display: flex !important; }
+#authOverlay {
+  transition: opacity .28s, backdrop-filter .28s, -webkit-backdrop-filter .28s;
+  backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+  background: rgba(0,0,0,0) !important;
+}
+#authOverlay.open {
+  display: flex !important;
+  backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+  background: rgba(0,0,0,.35) !important;
+}
+#authBox {
+  opacity: 0; transform: scale(.93) translateY(20px);
+  transition: opacity .34s cubic-bezier(.16,1,.3,1), transform .34s cubic-bezier(.16,1,.3,1);
+}
+#authOverlay.open #authBox { opacity: 1; transform: scale(1) translateY(0); }
 
 /* Hamburger button (hidden on desktop) */
 .nav-hamburger {
@@ -764,29 +791,36 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 </div>
 
 <!-- ══ AUTH MODAL ════════════════════════════════════════ -->
-<div id="authOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9100;align-items:center;justify-content:center;padding:20px" onclick="closeAuthModal(event)">
-  <div style="background:#fff;border-radius:20px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.22)" onclick="event.stopPropagation()">
-    <!-- Tabs -->
-    <div style="display:flex;border-bottom:1px solid var(--border)">
-      <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s">Sign in</button>
-      <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s">Create account</button>
+<div id="authOverlay" style="display:none;position:fixed;inset:0;z-index:9100;align-items:center;justify-content:center;padding:20px" onclick="closeAuthModal(event)">
+  <div id="authBox" style="width:100%;max-width:420px;background:rgba(255,255,255,.78);backdrop-filter:saturate(200%) blur(28px);-webkit-backdrop-filter:saturate(200%) blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:26px;overflow:hidden;box-shadow:0 28px 80px rgba(0,0,0,.2),0 1px 0 rgba(255,255,255,.9) inset" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div style="padding:28px 28px 0;text-align:center">
+      <div style="width:52px;height:52px;border-radius:16px;background:var(--t1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="12" width="4" height="10" rx="1"/><rect x="9" y="7" width="4" height="15" rx="1"/><rect x="16" y="3" width="4" height="19" rx="1"/></svg>
+      </div>
+      <div id="authTitle" style="font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--t1);margin-bottom:4px">Welcome back</div>
+      <div id="authSubtitle" style="font-size:14px;color:var(--t2);margin-bottom:24px">Sign in to your InfluenceIQ account</div>
     </div>
-    <div style="padding:28px">
-      <!-- Register name field (hidden on login) -->
+    <!-- Tabs -->
+    <div style="display:flex;margin:0 28px;background:rgba(0,0,0,.06);border-radius:12px;padding:3px;margin-bottom:24px">
+      <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:none;background:#fff;cursor:pointer;font-family:inherit;color:var(--t1);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.1);transition:all .2s">Sign in</button>
+      <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:9px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:inherit;color:var(--t2);border-radius:10px;transition:all .2s">Create account</button>
+    </div>
+    <div style="padding:0 28px 28px">
       <div id="fieldName" style="display:none;margin-bottom:14px">
         <label class="lbl">Your name</label>
-        <input type="text" id="authName" placeholder="Kostya Volkov">
+        <input type="text" id="authName" placeholder="Kostya Volkov" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
       </div>
       <div style="margin-bottom:14px">
         <label class="lbl">Email</label>
-        <input type="email" id="authEmail" placeholder="you@example.com">
+        <input type="email" id="authEmail" placeholder="you@example.com" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
       </div>
       <div style="margin-bottom:20px">
         <label class="lbl">Password</label>
-        <input type="password" id="authPassword" placeholder="••••••••">
+        <input type="password" id="authPassword" placeholder="••••••••" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
       </div>
       <div id="authError" style="display:none;font-size:13px;color:#c0392b;background:rgba(192,57,43,.08);padding:10px 14px;border-radius:10px;margin-bottom:16px"></div>
-      <button id="authSubmit" onclick="submitAuth()" class="btn-dark" style="width:100%;padding:14px;font-size:15px;border-radius:12px">Sign in</button>
+      <button id="authSubmit" onclick="submitAuth()" style="width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:14px;background:var(--t1);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .18s,transform .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Sign in</button>
     </div>
   </div>
 </div>
@@ -1716,17 +1750,22 @@ let authMode = 'login';
 
 function openAuthModal() {
   switchAuthTab('login');
-  document.getElementById('authOverlay').style.display = 'flex';
+  const ov = document.getElementById('authOverlay');
+  ov.style.display = 'flex';
+  ov.style.opacity = '0';
   document.getElementById('authEmail').value = '';
   document.getElementById('authPassword').value = '';
   document.getElementById('authName').value = '';
   document.getElementById('authError').style.display = 'none';
-  setTimeout(() => document.getElementById('authEmail').focus(), 100);
+  requestAnimationFrame(() => { ov.style.opacity = '1'; ov.classList.add('open'); });
+  setTimeout(() => document.getElementById('authEmail').focus(), 200);
 }
 
 function closeAuthModal(e) {
   if (!e || e.target === document.getElementById('authOverlay')) {
-    document.getElementById('authOverlay').style.display = 'none';
+    const ov = document.getElementById('authOverlay');
+    ov.classList.remove('open');
+    setTimeout(() => { ov.style.display = 'none'; }, 280);
   }
 }
 
@@ -1736,12 +1775,13 @@ function switchAuthTab(mode) {
   document.getElementById('fieldName').style.display = isLogin ? 'none' : 'block';
   document.getElementById('authSubmit').textContent = isLogin ? 'Sign in' : 'Create account';
   document.getElementById('authError').style.display = 'none';
-  document.getElementById('tabLogin').style.cssText  = isLogin
-    ? 'flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s'
-    : 'flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s';
-  document.getElementById('tabRegister').style.cssText = !isLogin
-    ? 'flex:1;padding:18px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t1);border-bottom:2px solid var(--t1);transition:all .2s'
-    : 'flex:1;padding:18px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--t3);border-bottom:2px solid transparent;transition:all .2s';
+  document.getElementById('authTitle').textContent = isLogin ? 'Welcome back' : 'Create account';
+  document.getElementById('authSubtitle').textContent = isLogin ? 'Sign in to your InfluenceIQ account' : 'Join InfluenceIQ — it\'s free';
+
+  const activeStyle = 'flex:1;padding:9px;font-size:13px;font-weight:600;border:none;background:#fff;cursor:pointer;font-family:inherit;color:var(--t1);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.1);transition:all .2s';
+  const inactiveStyle = 'flex:1;padding:9px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:inherit;color:var(--t2);border-radius:10px;transition:all .2s';
+  document.getElementById('tabLogin').style.cssText = isLogin ? activeStyle : inactiveStyle;
+  document.getElementById('tabRegister').style.cssText = !isLogin ? activeStyle : inactiveStyle;
 }
 
 async function submitAuth() {
@@ -1769,7 +1809,7 @@ async function submitAuth() {
     if (!res.ok) { showAuthError(data.detail || 'Error'); return; }
 
     localStorage.setItem('iq_token', data.access_token);
-    document.getElementById('authOverlay').style.display = 'none';
+    closeAuthModal();
     await loadUser();
     toast('Welcome! 👋');
   } catch(e) {
