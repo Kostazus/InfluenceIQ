@@ -138,20 +138,7 @@ tbody tr:hover td { background: rgba(0,0,0,.018); }
 </head>
 <body>
 
-<!-- Auth gate -->
-<div id="authGate">
-  <div class="auth-box">
-    <div style="font-size:28px;margin-bottom:12px">⚡</div>
-    <h2>Admin Panel</h2>
-    <p>Sign in with your admin account</p>
-    <input class="auth-inp" type="email" id="loginEmail" placeholder="Email" onkeydown="if(event.key==='Enter')doLogin()">
-    <input class="auth-inp" type="password" id="loginPassword" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn-primary" onclick="doLogin()">Sign in</button>
-    <div class="auth-err" id="loginErr"></div>
-  </div>
-</div>
-
-<div class="layout" id="appLayout" style="display:none">
+<div class="layout" id="appLayout">
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-logo">
@@ -185,7 +172,7 @@ tbody tr:hover td { background: rgba(0,0,0,.018); }
           <div class="admin-role">Administrator</div>
         </div>
       </div>
-      <button onclick="logout()" style="margin-top:12px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:none;font-size:12px;font-weight:500;color:var(--red);cursor:pointer;font-family:inherit">Sign out</button>
+      <a href="/" style="margin-top:12px;display:block;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--border);background:none;font-size:12px;font-weight:500;color:var(--t2);text-decoration:none">← Back to site</a>
     </div>
   </aside>
 
@@ -263,63 +250,8 @@ tbody tr:hover td { background: rgba(0,0,0,.018); }
 </div>
 
 <script>
-let token = localStorage.getItem('iq_admin_token');
-
-/* ── AUTH ── */
-async function doLogin() {
-  const email    = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const errEl    = document.getElementById('loginErr');
-  errEl.textContent = '';
-  if (!email || !password) { errEl.textContent = 'Fill in all fields'; return; }
-
-  try {
-    const res  = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (!res.ok) { errEl.textContent = data.detail || 'Wrong credentials'; return; }
-
-    // Check admin
-    const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + data.access_token } });
-    const user = await me.json();
-
-    // Try admin endpoint to verify access
-    const check = await fetch('/api/admin/stats', { headers: { Authorization: 'Bearer ' + data.access_token } });
-    if (!check.ok) { errEl.textContent = 'No admin access'; return; }
-
-    token = data.access_token;
-    localStorage.setItem('iq_admin_token', token);
-    showApp(user);
-  } catch(e) {
-    errEl.textContent = 'Network error';
-  }
-}
-
-function showApp(user) {
-  document.getElementById('authGate').style.display = 'none';
-  document.getElementById('appLayout').style.display = 'flex';
-  const initials = user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('sidebarAv').textContent = initials;
-  document.getElementById('sidebarName').textContent = user.name;
-  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-  loadDashboard();
-  loadUsers();
-  loadHistory();
-}
-
-function logout() {
-  localStorage.removeItem('iq_admin_token');
-  token = null;
-  document.getElementById('authGate').style.display = 'flex';
-  document.getElementById('appLayout').style.display = 'none';
-}
-
 async function authFetch(url) {
-  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
-  if (res.status === 401 || res.status === 403) { logout(); throw new Error('Unauthorized'); }
+  const res = await fetch(url);
   return res.json();
 }
 
@@ -444,16 +376,11 @@ async function loadHistory() {
 }
 
 /* ── INIT ── */
-window.addEventListener('DOMContentLoaded', async () => {
-  if (!token) return;
-  try {
-    const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } });
-    if (!me.ok) { localStorage.removeItem('iq_admin_token'); return; }
-    const user = await me.json();
-    const check = await fetch('/api/admin/stats', { headers: { Authorization: 'Bearer ' + token } });
-    if (!check.ok) { localStorage.removeItem('iq_admin_token'); return; }
-    showApp(user);
-  } catch(e) {}
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  loadDashboard();
+  loadUsers();
+  loadHistory();
 });
 </script>
 </body>
