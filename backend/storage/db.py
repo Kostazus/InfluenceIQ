@@ -24,9 +24,15 @@ async def init_db():
                 id            INTEGER PRIMARY KEY AUTOINCREMENT,
                 email         TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
-                name          TEXT NOT NULL
+                name          TEXT NOT NULL,
+                is_admin      INTEGER DEFAULT 0,
+                created_at    TEXT DEFAULT (datetime('now'))
             )
         """)
+        await db.commit()
+
+        # Make first user admin automatically
+        await db.execute("UPDATE users SET is_admin=1 WHERE id=1 AND is_admin=0")
         await db.commit()
 
 

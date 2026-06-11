@@ -10,6 +10,7 @@ load_dotenv()
 from backend.routers import forecast, stats
 from backend.routers.history import router as history_router
 from backend.routers.auth import router as auth_router
+from backend.routers.admin import router as admin_router
 from backend.storage.db import init_db
 
 
@@ -32,6 +33,7 @@ app.include_router(forecast.router)
 app.include_router(history_router)
 app.include_router(stats.router)
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
@@ -40,6 +42,10 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 async def history_page():
     return FileResponse("frontend/templates/history.html")
 
+
+@app.get("/admin", include_in_schema=False)
+async def admin_page():
+    return FileResponse("frontend/templates/admin.html")
 
 @app.get("/", include_in_schema=False)
 async def root():

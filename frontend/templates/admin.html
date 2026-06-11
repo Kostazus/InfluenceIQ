@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfluenceIQ — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f5f7;
+  --white: #ffffff;
+  --t1: #1d1d1f;
+  --t2: #6e6e73;
+  --t3: #aeaeb2;
+  --border: rgba(0,0,0,.1);
+  --blue: #0071e3;
+  --red: #ff3b30;
+  --green: #34c759;
+  --amber: #ff9500;
+}
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  display: flex; flex-direction: column;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 20px 24px; border-bottom: 1px solid var(--border);
+  font-size: 15px; font-weight: 700; color: var(--t1);
+}
+.sidebar-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  background: var(--t1); color: #fff; border-radius: 99px;
+  letter-spacing: .04em;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px; font-size: 13.5px; font-weight: 500;
+  color: var(--t2); cursor: pointer; border-radius: 0;
+  transition: all .15s; text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--t1); background: rgba(0,0,0,.03); }
+.nav-item.active { color: var(--t1); background: rgba(0,0,0,.04); border-left-color: var(--t1); font-weight: 600; }
+.nav-section { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--t3); padding: 16px 20px 6px; }
+.sidebar-bottom { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+.admin-user { display: flex; align-items: center; gap: 10px; }
+.admin-av { width: 32px; height: 32px; border-radius: 50%; background: var(--t1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.admin-name { font-size: 13px; font-weight: 600; }
+.admin-role { font-size: 11px; color: var(--t3); }
+
+/* Main */
+.main { margin-left: 240px; flex: 1; }
+.topbar {
+  height: 56px; background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; position: sticky; top: 0; z-index: 10;
+}
+.page-title { font-size: 15px; font-weight: 700; }
+.content { padding: 28px; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.stat-value { font-size: 32px; font-weight: 800; letter-spacing: -.03em; color: var(--t1); }
+.stat-sub { font-size: 12px; color: var(--t2); margin-top: 6px; }
+
+/* Cards */
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+.card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 14px; font-weight: 700; }
+.card-count { font-size: 12px; color: var(--t3); }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 11px; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .06em; padding: 10px 22px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 13px 22px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(0,0,0,.018); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.badge-admin { background: rgba(0,113,227,.1); color: var(--blue); }
+.badge-user  { background: rgba(0,0,0,.06); color: var(--t2); }
+.badge-platform { background: rgba(0,0,0,.06); color: var(--t1); font-size: 11px; }
+
+/* Avatar */
+.av { width: 30px; height: 30px; border-radius: 50%; background: var(--t1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-name { font-size: 13.5px; font-weight: 600; }
+.user-email { font-size: 11.5px; color: var(--t3); }
+
+/* Delete btn */
+.btn-del { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,59,48,.08); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--red); font-size: 13px; transition: all .15s; }
+.btn-del:hover { background: rgba(255,59,48,.15); }
+
+/* Auth gate */
+#authGate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.auth-box { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 36px; width: 100%; max-width: 360px; text-align: center; }
+.auth-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.auth-box p  { font-size: 14px; color: var(--t2); margin-bottom: 24px; }
+.auth-inp { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(0,0,0,.18); font-size: 14px; font-family: inherit; outline: none; margin-bottom: 10px; }
+.auth-inp:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,113,227,.12); }
+.btn-primary { width: 100%; padding: 13px; background: var(--t1); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .18s; }
+.btn-primary:hover { opacity: .85; }
+.auth-err { font-size: 13px; color: var(--red); margin-top: 10px; min-height: 20px; }
+
+/* Loading */
+.loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--t3); font-size: 14px; }
+
+/* Empty */
+.empty { text-align: center; padding: 40px; color: var(--t3); font-size: 14px; }
+
+/* Topbar right */
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.btn-sm-outline { padding: 7px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--white); font-size: 12px; font-weight: 500; color: var(--t1); cursor: pointer; font-family: inherit; transition: all .15s; }
+.btn-sm-outline:hover { background: var(--bg); }
+
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="authGate">
+  <div class="auth-box">
+    <div style="font-size:28px;margin-bottom:12px">⚡</div>
+    <h2>Admin Panel</h2>
+    <p>Sign in with your admin account</p>
+    <input class="auth-inp" type="email" id="loginEmail" placeholder="Email" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="auth-inp" type="password" id="loginPassword" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-primary" onclick="doLogin()">Sign in</button>
+    <div class="auth-err" id="loginErr"></div>
+  </div>
+</div>
+
+<div class="layout" id="appLayout" style="display:none">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="18" height="18" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46.7 790.7 0 663 0 541.8c0-194.3 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
+      InfluenceIQ <span class="sidebar-badge">ADMIN</span>
+    </div>
+
+    <div style="padding-top:12px">
+      <div class="nav-section">Overview</div>
+      <a class="nav-item active" onclick="showPage('dashboard')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+
+      <div class="nav-section">Data</div>
+      <a class="nav-item" onclick="showPage('users')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </a>
+      <a class="nav-item" onclick="showPage('history')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Analyses
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="admin-user">
+        <div class="admin-av" id="sidebarAv">K</div>
+        <div>
+          <div class="admin-name" id="sidebarName">Admin</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+      <button onclick="logout()" style="margin-top:12px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:none;font-size:12px;font-weight:500;color:var(--red);cursor:pointer;font-family:inherit">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span id="topbarDate" style="font-size:12px;color:var(--t3)"></span>
+        <a href="/" target="_blank" class="btn-sm-outline">← Back to site</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="pageDashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="loading" style="grid-column:1/-1">Loading...</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent analyses</div>
+            <div class="card-count" id="recentCount"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>#</th><th>Platform</th><th>Views</th><th>Ad spend</th><th>Date</th>
+              </tr></thead>
+              <tbody id="recentBody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="pageUsers" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">All users</div>
+            <div class="card-count" id="usersCount"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>User</th><th>Role</th><th>Registered</th><th></th>
+              </tr></thead>
+              <tbody id="usersBody"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div id="pageHistory" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">All analyses</div>
+            <div class="card-count" id="historyCount"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>#</th><th>Platform</th><th>Views</th><th>Ad spend</th><th>ROI</th><th>Date</th>
+              </tr></thead>
+              <tbody id="historyBody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let token = localStorage.getItem('iq_admin_token');
+
+/* ── AUTH ── */
+async function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginErr');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Fill in all fields'; return; }
+
+  try {
+    const res  = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.detail || 'Wrong credentials'; return; }
+
+    // Check admin
+    const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + data.access_token } });
+    const user = await me.json();
+
+    // Try admin endpoint to verify access
+    const check = await fetch('/api/admin/stats', { headers: { Authorization: 'Bearer ' + data.access_token } });
+    if (!check.ok) { errEl.textContent = 'No admin access'; return; }
+
+    token = data.access_token;
+    localStorage.setItem('iq_admin_token', token);
+    showApp(user);
+  } catch(e) {
+    errEl.textContent = 'Network error';
+  }
+}
+
+function showApp(user) {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('appLayout').style.display = 'flex';
+  const initials = user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sidebarAv').textContent = initials;
+  document.getElementById('sidebarName').textContent = user.name;
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  loadDashboard();
+  loadUsers();
+  loadHistory();
+}
+
+function logout() {
+  localStorage.removeItem('iq_admin_token');
+  token = null;
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('appLayout').style.display = 'none';
+}
+
+async function authFetch(url) {
+  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  if (res.status === 401 || res.status === 403) { logout(); throw new Error('Unauthorized'); }
+  return res.json();
+}
+
+/* ── PAGES ── */
+function showPage(name) {
+  ['Dashboard','Users','History'].forEach(p => {
+    document.getElementById('page' + p).style.display = 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).style.display = 'block';
+  event.currentTarget.classList.add('active');
+  document.getElementById('pageTitle').textContent =
+    name === 'dashboard' ? 'Dashboard' : name === 'users' ? 'Users' : 'Analyses';
+}
+
+/* ── DASHBOARD ── */
+async function loadDashboard() {
+  try {
+    const s = await authFetch('/api/admin/stats');
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Total users</div>
+        <div class="stat-value">${s.total_users}</div>
+        <div class="stat-sub">+${s.new_users_week} this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total analyses</div>
+        <div class="stat-value">${s.total_analyses}</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value">${s.today_analyses}</div>
+        <div class="stat-sub">Analyses today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">New users</div>
+        <div class="stat-value">${s.new_users_week}</div>
+        <div class="stat-sub">Last 7 days</div>
+      </div>
+    `;
+  } catch(e) {}
+}
+
+/* ── USERS ── */
+async function loadUsers() {
+  try {
+    const users = await authFetch('/api/admin/users');
+    document.getElementById('usersCount').textContent = users.length + ' total';
+    if (!users.length) {
+      document.getElementById('usersBody').innerHTML = '<tr><td colspan="4" class="empty">No users yet</td></tr>';
+      return;
+    }
+    document.getElementById('usersBody').innerHTML = users.map(u => `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="av">${u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</div>
+            <div>
+              <div class="user-name">${u.name}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge ${u.is_admin ? 'badge-admin' : 'badge-user'}">${u.is_admin ? 'Admin' : 'User'}</span></td>
+        <td style="color:var(--t2);font-size:12.5px">${u.created_at ? u.created_at.slice(0,10) : '—'}</td>
+        <td>${!u.is_admin ? `<button class="btn-del" onclick="deleteUser(${u.id}, this)" title="Delete">✕</button>` : ''}</td>
+      </tr>
+    `).join('');
+  } catch(e) {}
+}
+
+async function deleteUser(id, btn) {
+  if (!confirm('Delete this user?')) return;
+  await fetch('/api/admin/users/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } });
+  btn.closest('tr').remove();
+}
+
+/* ── HISTORY ── */
+async function loadHistory() {
+  try {
+    const rows = await authFetch('/api/admin/history?limit=100');
+    document.getElementById('historyCount').textContent = rows.length + ' records';
+    document.getElementById('recentCount').textContent = 'Last 5';
+
+    if (!rows.length) {
+      document.getElementById('historyBody').innerHTML = '<tr><td colspan="6" class="empty">No analyses yet</td></tr>';
+      document.getElementById('recentBody').innerHTML  = '<tr><td colspan="5" class="empty">No analyses yet</td></tr>';
+      return;
+    }
+
+    const rowHtml = (r) => {
+      const roi = r.result?.roi_percent ? Math.round(r.result.roi_percent) + '%' : '—';
+      const date = r.created ? r.created.slice(0,10) : '—';
+      return { roi, date };
+    };
+
+    document.getElementById('historyBody').innerHTML = rows.map(r => {
+      const { roi, date } = rowHtml(r);
+      return `<tr>
+        <td style="color:var(--t3)">#${r.id}</td>
+        <td><span class="badge badge-platform">${r.platform || '—'}</span></td>
+        <td>${(r.views||0).toLocaleString()}</td>
+        <td>$${r.ad_price || 0}</td>
+        <td style="font-weight:600;color:var(--t1)">${roi}</td>
+        <td style="color:var(--t2);font-size:12px">${date}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('recentBody').innerHTML = rows.slice(0,5).map(r => {
+      const { roi, date } = rowHtml(r);
+      return `<tr>
+        <td style="color:var(--t3)">#${r.id}</td>
+        <td><span class="badge badge-platform">${r.platform || '—'}</span></td>
+        <td>${(r.views||0).toLocaleString()}</td>
+        <td>$${r.ad_price || 0}</td>
+        <td style="color:var(--t2);font-size:12px">${date}</td>
+      </tr>`;
+    }).join('');
+
+  } catch(e) {}
+}
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', async () => {
+  if (!token) return;
+  try {
+    const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!me.ok) { localStorage.removeItem('iq_admin_token'); return; }
+    const user = await me.json();
+    const check = await fetch('/api/admin/stats', { headers: { Authorization: 'Bearer ' + token } });
+    if (!check.ok) { localStorage.removeItem('iq_admin_token'); return; }
+    showApp(user);
+  } catch(e) {}
+});
+</script>
+</body>
+</html>
