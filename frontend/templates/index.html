@@ -720,7 +720,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 /* Mobile nav menu */
 .nav-mobile {
   display: none;
-  position: fixed; top: var(--nav-h); left: 0; right: 0;
+  position: fixed; top: calc(var(--nav-h) + 20px); left: 0; right: 0;
   background: rgba(255,255,255,.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -736,6 +736,12 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
   transition: background .15s;
 }
 .nav-mobile a:hover { background: rgba(0,0,0,.04); }
+
+/* Hide desktop-only nav buttons on mobile */
+@media (max-width: 768px) {
+  .nav-btn-desktop { display: none !important; }
+  #authBtn { padding: 6px 13px !important; font-size: 12px !important; }
+}
 </style>
 </head>
 <body>
@@ -755,13 +761,13 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <li><a onclick="scrollTo('settings')">Settings</a></li>
   </ul>
   <div class="nav-right">
-    <button class="nav-btn" title="Search">
+    <button class="nav-btn nav-btn-desktop" title="Search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
-    <button class="nav-btn" id="themeBtn" title="Notifications">
+    <button class="nav-btn nav-btn-desktop" id="themeBtn" title="Notifications">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </button>
-    <button class="nav-btn" onclick="openSettings()" title="Settings">
+    <button class="nav-btn nav-btn-desktop" onclick="openSettings()" title="Settings">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
     <!-- Auth button -->
@@ -787,7 +793,11 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
   <a onclick="scrollTo('insights');closeMobileNav()">Insights</a>
   <a onclick="scrollTo('campaigns');closeMobileNav()">Campaigns</a>
   <a onclick="scrollTo('reports');closeMobileNav()">Reports</a>
-  <a onclick="scrollTo('settings');closeMobileNav()">Settings</a>
+  <div style="height:1px;background:rgba(0,0,0,.07);margin:4px 16px"></div>
+  <a onclick="openSettings();closeMobileNav()" style="display:flex;align-items:center;gap:10px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Settings
+  </a>
 </div>
 
 <!-- ══ AUTH MODAL ════════════════════════════════════════ -->
