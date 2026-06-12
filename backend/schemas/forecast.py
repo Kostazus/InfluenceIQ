@@ -8,6 +8,7 @@ class BloggerInput(BaseModel):
     likes: int = Field(..., ge=0, description="Средние лайки")
     followers: Optional[int] = Field(None, ge=0)
     link: Optional[str] = None
+    name: Optional[str] = None
 
 
 class CampaignInput(BaseModel):

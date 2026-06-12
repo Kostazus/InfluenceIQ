@@ -4,108 +4,294 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InfluenceIQ — History</title>
-<link rel="stylesheet" href="/static/css/style.css?v=13">
-<link rel="stylesheet" href="/static/css/history.css?v=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css?v=14">
+<link rel="stylesheet" href="/static/css/history.css?v=5">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
+
+/* ── NAV ── */
+.h-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: saturate(200%) blur(20px);
+  -webkit-backdrop-filter: saturate(200%) blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  padding: 0 24px; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.h-nav-logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #1d1d1f; text-decoration: none; }
+.h-nav-right { display: flex; align-items: center; gap: 10px; }
+.btn-new {
+  padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  background: #1d1d1f; color: #fff; text-decoration: none;
+  transition: opacity .15s;
+}
+.btn-new:hover { opacity: .8; }
+
+/* ── PAGE ── */
+.h-page { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* ── HEADER ── */
+.h-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.h-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -.03em; }
+.h-head h1 span { color: #6e6e73; }
+.h-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ── STATS ── */
+.h-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.h-stat { background: #fff; border-radius: 16px; padding: 16px 18px; border: 1px solid rgba(0,0,0,.07); }
+.h-stat-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #aeaeb2; margin-bottom: 6px; }
+.h-stat-val { font-size: 22px; font-weight: 800; letter-spacing: -.03em; color: #1d1d1f; }
+.h-stat-val.pos { color: #1a7a35; }
+
+/* ── TREND ── */
+.h-trend {
+  background: #fff; border-radius: 18px; padding: 20px 22px;
+  border: 1px solid rgba(0,0,0,.07); margin-bottom: 20px;
+}
+.h-trend-title { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #aeaeb2; margin-bottom: 14px; }
+.h-trend canvas { height: 130px !important; }
+
+/* ── FILTER BAR ── */
+.h-filters { display: flex; align-items: center; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 7px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 500;
+  border: 1px solid rgba(0,0,0,.1); background: #fff; color: #6e6e73;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.filter-btn.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; font-weight: 600; }
+.filter-btn:hover:not(.active) { background: rgba(0,0,0,.05); }
+.btn-export {
+  padding: 7px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 500;
+  border: 1px solid rgba(0,0,0,.1); background: #fff; color: #1d1d1f;
+  cursor: pointer; font-family: inherit; transition: all .15s; margin-left: auto;
+}
+.btn-export:hover { background: rgba(0,0,0,.05); }
+.btn-clear {
+  padding: 7px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 500;
+  border: 1px solid rgba(255,59,48,.2); background: #fff; color: #ff3b30;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.btn-clear:hover { background: rgba(255,59,48,.05); }
+
+/* ── CARDS ── */
+.h-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 12px; }
+.h-card {
+  background: #fff; border-radius: 18px; padding: 18px;
+  border: 1px solid rgba(0,0,0,.07);
+  cursor: pointer; transition: box-shadow .2s, transform .2s, border-color .2s;
+  opacity: 0;
+}
+.h-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.1); transform: translateY(-2px); }
+.h-card.compare-selected { border-color: #1d1d1f; box-shadow: 0 0 0 2px #1d1d1f; }
+
+.h-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; }
+.h-date { font-size: 11px; color: #aeaeb2; white-space: nowrap; flex-shrink: 0; }
+.h-platform-badge {
+  padding: 3px 9px; border-radius: 6px; font-size: 10px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.platform-youtube   { background: rgba(255,59,48,.1);  color: #c0392b; }
+.platform-tiktok    { background: rgba(0,0,0,.07);     color: #1d1d1f; }
+.platform-instagram { background: rgba(142,68,173,.1); color: #7d3c98; }
+.platform-telegram  { background: rgba(0,132,255,.1);  color: #0055b3; }
+
+.h-card-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.h-metric-label { font-size: 10px; color: #aeaeb2; margin-bottom: 3px; font-weight: 500; }
+.h-metric-val { font-size: 13px; font-weight: 700; color: #1d1d1f; }
+.h-metric-val.positive { color: #1a7a35; }
+.h-metric-val.negative { color: #c0392b; }
+
+.h-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.h-rec-badge { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+.h-rec-badge.take  { background: rgba(52,199,89,.12); color: #1a7a35; }
+.h-rec-badge.risky { background: rgba(255,149,0,.12); color: #b36200; }
+.h-rec-badge.skip  { background: rgba(255,59,48,.1);  color: #c0392b; }
+
+.h-card-btns { display: flex; gap: 4px; }
+.h-btn {
+  width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(0,0,0,.1);
+  background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #6e6e73; transition: all .15s;
+}
+.h-btn:hover { background: rgba(0,0,0,.05); color: #1d1d1f; }
+.h-btn.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+.h-btn.danger:hover { background: rgba(255,59,48,.08); color: #ff3b30; border-color: rgba(255,59,48,.2); }
+
+/* ── EMPTY ── */
+.h-empty { text-align: center; padding: 60px 20px; }
+.h-empty p { color: #6e6e73; margin: 8px 0 20px; font-size: 15px; }
+.hidden { display: none !important; }
+
+/* ── MODALS ── */
+.detail-overlay, .compare-overlay {
+  display: none; position: fixed; inset: 0; z-index: 600;
+  background: rgba(0,0,0,.35); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.detail-overlay.active, .compare-overlay.active { display: flex; }
+.detail-modal, .compare-modal {
+  background: rgba(255,255,255,.88);
+  backdrop-filter: saturate(200%) blur(28px);
+  -webkit-backdrop-filter: saturate(200%) blur(28px);
+  border: 1px solid rgba(255,255,255,.7); border-radius: 22px;
+  width: 100%; max-width: 480px;
+  box-shadow: 0 28px 80px rgba(0,0,0,.2);
+  opacity: 0; transform: scale(.95) translateY(16px);
+  transition: opacity .3s cubic-bezier(.16,1,.3,1), transform .3s cubic-bezier(.16,1,.3,1);
+  overflow: hidden;
+}
+.compare-modal { max-width: 580px; }
+.detail-modal.active, .compare-modal.active { opacity: 1; transform: scale(1) translateY(0); }
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px 16px; border-bottom: 1px solid rgba(0,0,0,.07);
+}
+.modal-title { font-size: 15px; font-weight: 700; color: #1d1d1f; }
+.modal-close {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: rgba(0,0,0,.08); color: #6e6e73; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  transition: background .15s;
+}
+.modal-close:hover { background: rgba(0,0,0,.14); }
+.modal-body { padding: 18px 22px 22px; overflow-y: auto; max-height: 70vh; }
+
+.detail-section { margin-bottom: 18px; }
+.detail-section-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #aeaeb2; margin-bottom: 10px; }
+.detail-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.detail-metric { background: rgba(0,0,0,.04); border-radius: 12px; padding: 12px 14px; }
+.dm-label { font-size: 11px; color: #aeaeb2; margin-bottom: 4px; font-weight: 500; }
+.dm-val { font-size: 15px; font-weight: 700; color: #1d1d1f; }
+.detail-repeat-btn {
+  width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,.12);
+  background: transparent; font-size: 13.5px; font-weight: 600; color: #1d1d1f;
+  cursor: pointer; font-family: inherit; transition: all .15s; margin-top: 6px;
+}
+.detail-repeat-btn:hover { background: rgba(0,0,0,.05); }
+
+/* ── TOAST ── */
+.iq-toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(12px);
+  background: #1d1d1f; color: #fff; padding: 10px 20px; border-radius: 99px;
+  font-size: 13px; font-weight: 500; opacity: 0; transition: all .3s; z-index: 900;
+  pointer-events: none; white-space: nowrap;
+}
+.iq-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .h-stats { grid-template-columns: 1fr 1fr; }
+  .h-card-metrics { grid-template-columns: 1fr 1fr; }
+  .h-head { flex-direction: column; }
+  .h-head-actions { width: 100%; }
+}
+</style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="/" class="logo">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M9 2L11.5 6.5H15.5L12.5 9.5L13.8 14L9 11.5L4.2 14L5.5 9.5L2.5 6.5H6.5L9 2Z" fill="url(#sg1)" stroke="rgba(0,229,160,0.4)" stroke-width="0.5"/>
-          <circle cx="9" cy="9" r="2.5" fill="rgba(0,229,160,0.9)"/>
-          <defs><linearGradient id="sg1" x1="2" y1="2" x2="16" y2="16"><stop offset="0%" stop-color="#00e5a0"/><stop offset="100%" stop-color="#0a84ff"/></linearGradient></defs>
-        </svg>
-      </div>
-      InfluenceIQ
-    </a>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/#features">Features</a>
-      <a href="/#app">Dashboard</a>
-      <a href="/history" class="nav-active">History</a>
-    </div>
-    <div class="nav-right">
-      <a href="/#app" class="btn-primary">New Analysis →</a>
-    </div>
+<!-- NAV -->
+<nav class="h-nav">
+  <a href="/" class="h-nav-logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="12" width="4" height="10" rx="1"/><rect x="9" y="7" width="4" height="15" rx="1"/><rect x="16" y="3" width="4" height="19" rx="1"/></svg>
+    InfluenceIQ
+  </a>
+  <div class="h-nav-right">
+    <a href="/#app" class="btn-new">+ New Analysis</a>
   </div>
 </nav>
 
-<div class="history-page">
-  <div class="container">
+<!-- PAGE -->
+<div class="h-page">
 
-    <!-- Header -->
-    <div class="history-header reveal">
-      <div>
-        <h1 class="history-title">Analysis <span class="gradient-text">History</span></h1>
-        <p class="history-sub">All your influencer analyses in one place</p>
-      </div>
-      <div class="history-actions">
-        <div class="filter-group">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="take">🟢 Take</button>
-          <button class="filter-btn" data-filter="risky">🟡 Risky</button>
-          <button class="filter-btn" data-filter="skip">🔴 Skip</button>
-        </div>
-        <button class="btn-export" id="exportBtn">↓ Export CSV</button>
-        <button class="btn-clear" id="clearBtn">🗑 Clear All</button>
-      </div>
+  <!-- Header -->
+  <div class="h-head">
+    <div>
+      <h1>Analysis <span>History</span></h1>
+      <p style="font-size:14px;color:#6e6e73;margin-top:4px">Your influencer analyses, saved per account</p>
     </div>
-
-    <!-- Stats row -->
-    <div class="stats-row reveal d1" id="statsRow">
-      <div class="stat-card">
-        <div class="stat-card-label">TOTAL ANALYSES</div>
-        <div class="stat-card-val" id="statTotal">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">AVG PROFIT</div>
-        <div class="stat-card-val mint" id="statProfit">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">BEST ROI</div>
-        <div class="stat-card-val mint" id="statRoi">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">SUCCESS RATE</div>
-        <div class="stat-card-val" id="statSuccess">—</div>
-      </div>
-    </div>
-
-    <!-- Cards grid -->
-    <div class="cards-grid" id="cardsGrid">
-      <div class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Loading history...</p>
-      </div>
-    </div>
-
-    <!-- Empty state -->
-    <div class="empty-history hidden" id="emptyHistory">
-      <div class="empty-history-icon">📊</div>
-      <h3>No analyses yet</h3>
-      <p>Run your first influencer analysis to see results here</p>
-      <a href="/#app" class="btn-primary btn-lg">Start Analysis →</a>
-    </div>
-
   </div>
+
+  <!-- Stats -->
+  <div class="h-stats">
+    <div class="h-stat">
+      <div class="h-stat-label">Total Analyses</div>
+      <div class="h-stat-val" id="statTotal">—</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-label">Avg Profit</div>
+      <div class="h-stat-val pos" id="statProfit">—</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-label">Best Result</div>
+      <div class="h-stat-val pos" id="statRoi">—</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-label">Success Rate</div>
+      <div class="h-stat-val" id="statSuccess">—</div>
+    </div>
+  </div>
+
+  <!-- Trend chart -->
+  <div class="h-trend">
+    <div class="h-trend-title">Profit Dynamics — last 20 analyses</div>
+    <canvas id="trendChart"></canvas>
+  </div>
+
+  <!-- Filters + actions -->
+  <div class="h-filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="take">Take</button>
+    <button class="filter-btn" data-filter="risky">Risky</button>
+    <button class="filter-btn" data-filter="skip">Skip</button>
+    <button class="btn-export" id="exportBtn">Export CSV</button>
+    <button class="btn-clear" id="clearBtn">Clear All</button>
+  </div>
+
+  <!-- Cards -->
+  <div class="h-cards" id="cardsGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#aeaeb2;font-size:14px">
+      Loading...
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div class="hidden" id="emptyHistory">
+    <div class="h-empty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#aeaeb2" stroke-width="1.5" style="margin-bottom:12px"><rect x="2" y="12" width="4" height="10" rx="1"/><rect x="9" y="7" width="4" height="15" rx="1"/><rect x="16" y="3" width="4" height="19" rx="1"/></svg>
+      <p>No analyses yet. Run your first one!</p>
+      <a href="/#app" class="btn-new">Start Analysis</a>
+    </div>
+  </div>
+
 </div>
 
 <!-- Detail Modal -->
-<div id="detail-overlay" class="detail-overlay">
+<div id="detail-overlay" class="detail-overlay" onclick="if(event.target===this)closeDetail()">
   <div class="detail-modal" id="detail-modal">
-    <div class="detail-header">
-      <div class="detail-title" id="detail-title">Analysis Report</div>
-      <button class="settings-close" onclick="closeDetail()">✕</button>
+    <div class="modal-header">
+      <div class="modal-title" id="detail-title">Analysis Report</div>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
     </div>
-    <div class="detail-body" id="detail-body"></div>
+    <div class="modal-body" id="detail-body"></div>
   </div>
 </div>
 
-<script src="/static/js/history.js?v=1"></script>
+<!-- Compare Modal -->
+<div id="compare-overlay" class="compare-overlay" onclick="if(event.target===this)closeCompareModal()">
+  <div class="compare-modal" id="compare-modal">
+    <div class="modal-header">
+      <div class="modal-title">Side-by-Side Comparison</div>
+      <button class="modal-close" onclick="closeCompareModal()">✕</button>
+    </div>
+    <div class="modal-body" id="compare-body"></div>
+  </div>
+</div>
+
+<script src="/static/js/history.js?v=5"></script>
 </body>
 </html>

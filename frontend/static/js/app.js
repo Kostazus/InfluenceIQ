@@ -46,13 +46,26 @@ linkInput?.addEventListener('paste', () => { setTimeout(() => { if (linkInput.va
 linkInput?.addEventListener('blur', () => { if (linkInput.value.startsWith('http')) fetchBtn.click(); });
 linkInput?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); fetchBtn.click(); } });
 
+// helpers
+function authHeaders(extra = {}) {
+  const token = localStorage.getItem('iq_token');
+  return token
+    ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, ...extra }
+    : { 'Content-Type': 'application/json', ...extra };
+}
+
+// Store fetched channel name/url for attaching to forecast
+let _fetchedName = null;
+let _fetchedUrl  = null;
+
 fetchBtn?.addEventListener('click', async () => {
   const url = linkInput.value.trim();
   if (!url) { showStatus('Enter a link', 'err'); return; }
   fetchBtn.disabled = true; fetchBtn.textContent = '...';
   showStatus('Loading...', 'inf'); clearAuto();
+  _fetchedName = null; _fetchedUrl = null;
   try {
-    const res = await fetch('/api/fetch-stats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+    const res = await fetch('/api/fetch-stats', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ url }) });
     const d = await res.json();
     if (!d.success) {
       if (d.manual) { showStatus(d.message, 'inf'); manualHint.classList.remove('hidden'); if (d.platform) setSel(fPlatform, d.platform); }
@@ -60,8 +73,14 @@ fetchBtn?.addEventListener('click', async () => {
       return;
     }
     manualHint.classList.add('hidden');
-    setSel(fPlatform, d.platform); auto(fViews, d.views); auto(fLikes, d.likes); auto(fFollowers, d.followers);
-    showStatus('✓ Loaded' + (d.name ? ' · ' + d.name : ''), 'ok');
+    setSel(fPlatform, d.platform);
+    auto(fViews, d.views);
+    auto(fLikes, d.likes ?? (d.views ? Math.round(d.views * (d.engagement_rate ? d.engagement_rate / 100 : 0.03)) : 0));
+    auto(fFollowers, d.followers);
+    _fetchedName = d.name || null;
+    _fetchedUrl  = d.channel_url || url;
+    const erText = d.engagement_rate != null ? ` · ER ${d.engagement_rate}%` : '';
+    showStatus('✓ ' + (d.name || 'Loaded') + erText, 'ok');
   } catch (e) { showStatus('Connection error', 'err'); }
   finally { fetchBtn.disabled = false; fetchBtn.textContent = 'Load'; }
 });
@@ -71,13 +90,18 @@ form?.addEventListener('submit', async e => {
   e.preventDefault();
   const fd = new FormData(form), g = k => fd.get(k);
   const payload = {
-    blogger: { platform: g('platform'), views: +g('views'), likes: +g('likes'), followers: g('followers') ? +g('followers') : null, link: g('link') || null },
+    blogger: {
+      platform: g('platform'), views: +g('views'), likes: +g('likes'),
+      followers: g('followers') ? +g('followers') : null,
+      link: _fetchedUrl || g('link') || null,
+      name: _fetchedName || null,
+    },
     campaign: { ad_price: +g('ad_price'), ad_format: g('ad_format'), product_price: +g('product_price'), product_type: g('product_type') },
     account: { followers: +g('acc_followers'), level: g('level'), custom_conversion: 0 },
   };
   submitBtn.disabled = true; submitBtn.textContent = 'Analyzing...';
   try {
-    const res = await fetch('/api/forecast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const res = await fetch('/api/forecast', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
     if (!res.ok) throw new Error('Server error');
     const d = await res.json();
     renderResult(d, payload);

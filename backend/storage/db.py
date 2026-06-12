@@ -9,12 +9,15 @@ async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("""
             CREATE TABLE IF NOT EXISTS history (
-                id        INTEGER PRIMARY KEY AUTOINCREMENT,
-                created   TEXT,
-                platform  TEXT,
-                views     INTEGER,
-                ad_price  REAL,
-                result    TEXT
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                created      TEXT,
+                platform     TEXT,
+                views        INTEGER,
+                ad_price     REAL,
+                result       TEXT,
+                user_id      INTEGER,
+                channel_name TEXT,
+                channel_url  TEXT
             )
         """)
         await db.commit()
@@ -31,20 +34,21 @@ async def init_db():
         """)
         await db.commit()
 
-        # Migration: add columns if they don't exist (for existing databases)
-        try:
-            await db.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
-            await db.commit()
-        except Exception:
-            pass  # column already exists
+        # Migrations — safe on existing DBs
+        for col_sql in [
+            "ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0",
+            "ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))",
+            "ALTER TABLE history ADD COLUMN user_id INTEGER",
+            "ALTER TABLE history ADD COLUMN channel_name TEXT",
+            "ALTER TABLE history ADD COLUMN channel_url TEXT",
+        ]:
+            try:
+                await db.execute(col_sql)
+                await db.commit()
+            except Exception:
+                pass
 
-        try:
-            await db.execute("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))")
-            await db.commit()
-        except Exception:
-            pass  # column already exists
-
-        # Make first user admin automatically
+        # First user is always admin
         try:
             await db.execute("UPDATE users SET is_admin=1 WHERE id=1 AND is_admin=0")
             await db.commit()
@@ -52,31 +56,60 @@ async def init_db():
             pass
 
 
-async def save_forecast(platform: str, views: int, ad_price: float, result: dict):
+async def save_forecast(
+    platform: str,
+    views: int,
+    ad_price: float,
+    result: dict,
+    user_id: int | None = None,
+    channel_name: str | None = None,
+    channel_url: str | None = None,
+) -> int:
     async with aiosqlite.connect(DB_PATH) as db:
-        await db.execute(
-            "INSERT INTO history (created, platform, views, ad_price, result) VALUES (?,?,?,?,?)",
-            (datetime.utcnow().isoformat(), platform, views, ad_price, json.dumps(result, ensure_ascii=False))
+        cursor = await db.execute(
+            """INSERT INTO history
+               (created, platform, views, ad_price, result, user_id, channel_name, channel_url)
+               VALUES (?,?,?,?,?,?,?,?)""",
+            (
+                datetime.utcnow().isoformat(),
+                platform, views, ad_price,
+                json.dumps(result, ensure_ascii=False),
+                user_id, channel_name, channel_url,
+            ),
         )
         await db.commit()
+        return cursor.lastrowid
 
 
-async def get_history(limit: int = 20) -> list:
+async def get_history(limit: int = 200, user_id: int | None = None) -> list:
     async with aiosqlite.connect(DB_PATH) as db:
         db.row_factory = aiosqlite.Row
-        cursor = await db.execute(
-            "SELECT id, created, platform, views, ad_price, result FROM history ORDER BY id DESC LIMIT ?",
-            (limit,)
-        )
+        if user_id is not None:
+            cursor = await db.execute(
+                """SELECT id, created, platform, views, ad_price, result,
+                          user_id, channel_name, channel_url
+                   FROM history WHERE user_id=? ORDER BY id DESC LIMIT ?""",
+                (user_id, limit),
+            )
+        else:
+            cursor = await db.execute(
+                """SELECT id, created, platform, views, ad_price, result,
+                          user_id, channel_name, channel_url
+                   FROM history ORDER BY id DESC LIMIT ?""",
+                (limit,),
+            )
         rows = await cursor.fetchall()
         return [
             {
-                "id": r["id"],
-                "created": r["created"],
-                "platform": r["platform"],
-                "views": r["views"],
-                "ad_price": r["ad_price"],
-                "result": json.loads(r["result"]),
+                "id":           r["id"],
+                "created":      r["created"],
+                "platform":     r["platform"],
+                "views":        r["views"],
+                "ad_price":     r["ad_price"],
+                "result":       json.loads(r["result"]),
+                "user_id":      r["user_id"],
+                "channel_name": r["channel_name"] or "",
+                "channel_url":  r["channel_url"] or "",
             }
             for r in rows
         ]
