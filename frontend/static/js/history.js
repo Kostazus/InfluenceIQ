@@ -424,5 +424,33 @@ function showToast(msg) {
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2500);
 }
 
+// ── JWT decode ────────────────────────────────────────────────
+function parseJWT(token) {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+  } catch { return null; }
+}
+
 // ── Init ──────────────────────────────────────────────────────
-loadHistory();
+const _token = localStorage.getItem('iq_token');
+if (!_token) {
+  // Show auth wall, hide main page
+  document.getElementById('authWall').style.display = 'block';
+  document.getElementById('mainPage').style.display = 'none';
+} else {
+  // Show user name in nav
+  const _payload = parseJWT(_token);
+  if (_payload) {
+    const badge = document.getElementById('navUserBadge');
+    if (badge) {
+      badge.textContent = _payload.name || _payload.email || 'Account';
+      badge.style.display = 'block';
+    }
+    const subtitle = document.getElementById('historySubtitle');
+    if (subtitle && (_payload.name || _payload.email)) {
+      subtitle.textContent = 'Signed in as ' + (_payload.name || _payload.email);
+    }
+  }
+  loadHistory();
+}
