@@ -34,6 +34,21 @@ async def init_db():
         """)
         await db.commit()
 
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS watchlist (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id      INTEGER NOT NULL,
+                channel_url  TEXT NOT NULL,
+                channel_name TEXT,
+                subscribers  INTEGER,
+                avg_views    INTEGER,
+                avg_er       REAL,
+                added_at     TEXT DEFAULT (datetime('now')),
+                refreshed_at TEXT
+            )
+        """)
+        await db.commit()
+
         # Migrations — safe on existing DBs
         for col_sql in [
             "ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0",

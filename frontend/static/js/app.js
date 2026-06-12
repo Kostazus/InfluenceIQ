@@ -81,6 +81,11 @@ fetchBtn?.addEventListener('click', async () => {
     _fetchedUrl  = d.channel_url || url;
     const erText = d.engagement_rate != null ? ` · ER ${d.engagement_rate}%` : '';
     showStatus('✓ ' + (d.name || 'Loaded') + erText, 'ok');
+
+    // Load analytics charts for YouTube
+    if (d.platform === 'youtube') {
+      fetchChannelAnalytics(url);
+    }
   } catch (e) { showStatus('Connection error', 'err'); }
   finally { fetchBtn.disabled = false; fetchBtn.textContent = 'Load'; }
 });
@@ -104,6 +109,8 @@ form?.addEventListener('submit', async e => {
     const res = await fetch('/api/forecast', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
     if (!res.ok) throw new Error('Server error');
     const d = await res.json();
+    window._lastForecastResult = d;
+    window._lastForecastPayload = payload;
     renderResult(d, payload);
     loadRecentRows();
   } catch (e) { alert('Error: ' + e.message); }
@@ -143,7 +150,7 @@ function renderResult(d, payload) {
         <h3 style="font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--t1)">Completed just now</h3>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn-outline btn-sm" onclick="showToast('Download coming soon')">↓ Download Report</button>
+        <button class="btn-outline btn-sm" id="downloadReportBtn" onclick="downloadReport()">↓ Download Report</button>
         <button class="btn-outline btn-sm" onclick="navigator.clipboard?.writeText(location.href);showToast('Link copied!')">↗ Share</button>
       </div>
     </div>
@@ -440,3 +447,256 @@ function showToast(m) {
   setTimeout(()=>{t.classList.remove('on');setTimeout(()=>t.remove(),400);},2500);
 }
 window.showToast = showToast;
+// ═══════════════════════════════════════════════════════════════
+// CHANNEL ANALYTICS CHARTS
+// ═══════════════════════════════════════════════════════════════
+let _analyticsCharts = [];
+
+function destroyAnalyticsCharts() {
+  _analyticsCharts.forEach(c => c.destroy());
+  _analyticsCharts = [];
+}
+
+async function fetchChannelAnalytics(url) {
+  const box = document.getElementById('channel-analytics');
+  if (!box) return;
+  box.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3);font-size:13px">Loading channel data...</div>';
+  box.style.display = 'block';
+  destroyAnalyticsCharts();
+
+  try {
+    const res = await fetch('/api/channel-analytics', {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+    if (d.error || !d.videos?.length) { box.style.display='none'; return; }
+
+    const labels = d.videos.map((v,i) => v.title.slice(0,18) + (v.title.length>18?'…':''));
+    const views  = d.videos.map(v => v.views);
+    const ers    = d.videos.map(v => v.er);
+
+    box.innerHTML = `
+      <div style="background:var(--white);border-radius:18px;border:1px solid var(--border);padding:20px;margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--t1)">${d.channel_name}</div>
+            <div style="font-size:12px;color:var(--t3);margin-top:2px">
+              ${(d.subscribers/1000).toFixed(0)}K subscribers · ${d.avg_views?.toLocaleString()} avg views · ER ${d.avg_er}%
+            </div>
+          </div>
+          <button onclick="addToWatchlist('${url.replace(/'/g,"\\'")}','${d.channel_name.replace(/'/g,"\\'")}', this)"
+            style="padding:7px 15px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--border);background:var(--white);cursor:pointer;font-family:inherit;transition:all .15s"
+            onmouseover="this.style.background='var(--bg-gray)'" onmouseout="this.style.background='var(--white)'">
+            + Watchlist
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Views — last 10 videos</div>
+            <div style="height:130px"><canvas id="analyticsViewsChart"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Engagement Rate %</div>
+            <div style="height:130px"><canvas id="analyticsErChart"></canvas></div>
+          </div>
+        </div>
+      </div>`;
+
+    const gridC = 'rgba(0,0,0,.05)', tickC = '#aeaeb2';
+    const c1 = new Chart(document.getElementById('analyticsViewsChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ data: views, backgroundColor: 'rgba(29,29,31,.82)', borderRadius: 4 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display:false }, tooltip: { callbacks: { label: c => ' ' + c.parsed.y.toLocaleString() + ' views' } } },
+        scales: { x: { grid:{display:false}, ticks:{display:false} }, y: { grid:{color:gridC}, ticks:{color:tickC,font:{size:10},callback:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v} } }
+      }
+    });
+    const c2 = new Chart(document.getElementById('analyticsErChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: ers, borderColor: '#1d1d1f', backgroundColor: 'rgba(29,29,31,.06)',
+          borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: '#1d1d1f',
+          pointBorderWidth: 2, tension: .35, fill: true
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.parsed.y}%`}} },
+        scales: { x:{grid:{display:false},ticks:{display:false}}, y:{grid:{color:gridC},ticks:{color:tickC,font:{size:10},callback:v=>v+'%'}} }
+      }
+    });
+    _analyticsCharts = [c1, c2];
+  } catch(e) { box.style.display = 'none'; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════════════════════════
+window._lastForecastPayload = null;
+window._lastForecastResult  = null;
+
+async function downloadReport() {
+  const r = window._lastForecastResult;
+  const p = window._lastForecastPayload;
+  if (!r || !p) { showToast('Run an analysis first'); return; }
+
+  const btn = document.getElementById('downloadReportBtn');
+  if (btn) { btn.textContent = 'Generating...'; btn.disabled = true; }
+
+  try {
+    const profit_avg = (r.profit_min + r.profit_max) / 2;
+    const roi = Math.round(profit_avg / p.campaign.ad_price * 100);
+    const body = {
+      channel_name:       _fetchedName || p.blogger.name || '',
+      channel_url:        _fetchedUrl  || p.blogger.link || '',
+      platform:           p.blogger.platform,
+      views:              p.blogger.views,
+      followers:          p.blogger.followers || 0,
+      ad_price:           p.campaign.ad_price,
+      engagement_rate:    r.engagement_rate,
+      subscribers_min:    r.subscribers_min,
+      subscribers_max:    r.subscribers_max,
+      sales_min:          r.sales_min,
+      sales_max:          r.sales_max,
+      profit_min:         r.profit_min,
+      profit_max:         r.profit_max,
+      roi,
+      audience_quality:   r.audience_quality,
+      risk_level:         r.risk_level,
+      recommendation:     r.recommendation,
+      recommendation_label: r.recommendation_label,
+    };
+    const res = await fetch('/api/export-pdf', {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { showToast('PDF error'); return; }
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'influenceiq-report.pdf';
+    a.click();
+    showToast('PDF downloaded!');
+  } catch(e) { showToast('Download failed'); }
+  finally { if (btn) { btn.textContent = '↓ Download Report'; btn.disabled = false; } }
+}
+
+// Store last result for PDF
+const _origRenderResult = window.renderResult || function(){};
+// patch after renderResult call — hook into submit handler instead
+const _origSubmit = form?.onsubmit;
+
+// ═══════════════════════════════════════════════════════════════
+// WATCHLIST
+// ═══════════════════════════════════════════════════════════════
+async function loadWatchlist() {
+  const token = localStorage.getItem('iq_token');
+  const box = document.getElementById('watchlist-cards');
+  const section = document.getElementById('watchlist-section');
+  if (!box || !section) return;
+
+  if (!token) { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  box.innerHTML = '<div style="color:var(--t3);font-size:13px;padding:8px 0">Loading...</div>';
+
+  try {
+    const res = await fetch('/api/watchlist', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { section.style.display='none'; return; }
+    const items = await res.json();
+
+    if (!items.length) {
+      box.innerHTML = `<div style="color:var(--t3);font-size:13px;padding:4px 0">No channels yet. Load a YouTube channel and click "+ Watchlist".</div>`;
+      return;
+    }
+
+    box.innerHTML = items.map(it => `
+      <div class="wl-card" data-id="${it.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.channel_name||it.channel_url}</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">${it.refreshed_at ? 'Updated '+new Date(it.refreshed_at).toLocaleDateString() : 'Never refreshed'}</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="wl-btn" title="Refresh" onclick="refreshWatchlistItem(${it.id},this)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            </button>
+            <button class="wl-btn danger" title="Remove" onclick="removeWatchlistItem(${it.id},this)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div class="wl-metric"><div class="wl-mlabel">Subscribers</div><div class="wl-mval">${it.subscribers!=null?(it.subscribers/1000).toFixed(0)+'K':'—'}</div></div>
+          <div class="wl-metric"><div class="wl-mlabel">Avg Views</div><div class="wl-mval">${it.avg_views!=null?(it.avg_views/1000).toFixed(0)+'K':'—'}</div></div>
+          <div class="wl-metric"><div class="wl-mlabel">ER</div><div class="wl-mval">${it.avg_er!=null?it.avg_er+'%':'—'}</div></div>
+        </div>
+        <button onclick="quickAnalyze('${(it.channel_url||'').replace(/'/g,"\\'")}',this)"
+          style="width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;font-size:12.5px;font-weight:600;color:var(--t1);cursor:pointer;font-family:inherit;transition:background .15s"
+          onmouseover="this.style.background='var(--bg-gray)'" onmouseout="this.style.background='transparent'">
+          Analyze →
+        </button>
+      </div>
+    `).join('');
+  } catch(e) { box.innerHTML = '<div style="color:var(--t3);font-size:13px">Failed to load</div>'; }
+}
+
+async function addToWatchlist(url, name, btn) {
+  const token = localStorage.getItem('iq_token');
+  if (!token) { showToast('Sign in to use watchlist'); return; }
+  if (btn) { btn.textContent = 'Adding...'; btn.disabled = true; }
+  try {
+    const res = await fetch('/api/watchlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ url }),
+    });
+    const d = await res.json();
+    if (res.status === 400) { showToast('Already in watchlist'); return; }
+    if (!res.ok) { showToast('Error adding to watchlist'); return; }
+    showToast('Added to watchlist!');
+    if (btn) { btn.textContent = 'Added'; btn.style.color='#1a7a35'; btn.style.borderColor='#1a7a35'; }
+    loadWatchlist();
+  } catch(e) { showToast('Error'); }
+  finally { if (btn) btn.disabled = false; }
+}
+
+async function removeWatchlistItem(id, btn) {
+  const token = localStorage.getItem('iq_token');
+  if (!token) return;
+  const card = btn.closest('.wl-card');
+  card.style.opacity = '0'; card.style.transition = 'opacity .25s';
+  await fetch(`/api/watchlist/${id}`, { method: 'DELETE', headers: {'Authorization':'Bearer '+token} });
+  setTimeout(() => card.remove(), 250);
+  showToast('Removed from watchlist');
+}
+
+async function refreshWatchlistItem(id, btn) {
+  const token = localStorage.getItem('iq_token');
+  if (!token) return;
+  btn.style.opacity = '.4'; btn.disabled = true;
+  try {
+    await fetch(`/api/watchlist/${id}/refresh`, { method:'POST', headers:{'Authorization':'Bearer '+token} });
+    showToast('Stats refreshed');
+    loadWatchlist();
+  } catch(e) { showToast('Refresh failed'); }
+  finally { btn.style.opacity='1'; btn.disabled=false; }
+}
+
+async function quickAnalyze(url, btn) {
+  if (!url) return;
+  // Scroll to analyze section and fill
+  const section = document.getElementById('page-analyze');
+  if (section) section.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    if (linkInput) { linkInput.value = url; fetchBtn?.click(); }
+  }, 600);
+}
+
+// Init watchlist on page load + after auth changes
+document.addEventListener('DOMContentLoaded', () => { setTimeout(loadWatchlist, 500); });
+window.addEventListener('iq_auth_change', loadWatchlist);

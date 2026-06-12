@@ -11,6 +11,8 @@ from backend.routers import forecast, stats
 from backend.routers.history import router as history_router
 from backend.routers.auth import router as auth_router
 from backend.routers.admin import router as admin_router
+from backend.routers.analytics import router as analytics_router
+from backend.routers.watchlist import router as watchlist_router
 from backend.storage.db import init_db
 
 
@@ -34,6 +36,8 @@ app.include_router(history_router)
 app.include_router(stats.router)
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(analytics_router)
+app.include_router(watchlist_router)
 
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
