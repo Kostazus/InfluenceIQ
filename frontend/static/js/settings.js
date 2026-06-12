@@ -38,28 +38,10 @@ const HTML = `
     <div style="margin-bottom:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.28);padding:0 4px">Appearance</div>
     <div class="s-group">
 
-      <!-- Accent color -->
-      <div class="s-row">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg>
-        </div>
-        <div class="s-row-label">Accent color</div>
-        <div style="display:flex;align-items:center;gap:5px;margin-left:auto">
-          <button class="sc on" id="sc0" data-c="#0071e3" style="background:#0071e3"></button>
-          <button class="sc" id="sc1" data-c="#17C964" style="background:#17C964"></button>
-          <button class="sc" id="sc2" data-c="#7C3AED" style="background:#7C3AED"></button>
-          <button class="sc" id="sc3" data-c="#F5A524" style="background:#F5A524"></button>
-          <button class="sc" id="sc4" data-c="#F31260" style="background:#F31260"></button>
-          <input type="color" id="p-color" value="#0071e3" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.12);padding:0;cursor:pointer;background:none">
-        </div>
-      </div>
-
-      <div class="s-div"></div>
-
       <!-- Font size -->
       <div class="s-row">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         </div>
         <div class="s-row-label">Font size</div>
         <div class="s-seg" id="fg">
@@ -73,8 +55,8 @@ const HTML = `
 
       <!-- Corner style -->
       <div class="s-row">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
         </div>
         <div class="s-row-label">Corners</div>
         <div class="s-seg" id="cg">
@@ -91,24 +73,24 @@ const HTML = `
     <div class="s-group">
 
       <div class="s-row">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
         <div class="s-row-label">Language</div>
         <select id="p-lang" class="s-select">
-          <option value="en">🇺🇸 English</option>
-          <option value="ru">🇷🇺 Русский</option>
-          <option value="uk">🇺🇦 Українська</option>
-          <option value="de">🇩🇪 Deutsch</option>
-          <option value="es">🇪🇸 Español</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="uk">Українська</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
         </select>
       </div>
 
       <div class="s-div"></div>
 
       <div class="s-row">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#f6d365,#fda085)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
         <div class="s-row-label">Currency</div>
         <select id="p-cur" class="s-select">
@@ -125,8 +107,8 @@ const HTML = `
     <div style="margin:16px 0 6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.28);padding:0 4px">API Keys</div>
     <div class="s-group" style="padding:14px 16px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#ff416c,#ff4b2b)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="rgba(0,0,0,.6)"/></svg>
         </div>
         <div style="font-size:13.5px;font-weight:600;color:var(--t1)">YouTube API v3</div>
       </div>
@@ -140,9 +122,9 @@ const HTML = `
         " onfocus="this.style.borderColor='var(--blue)';this.style.boxShadow='0 0 0 3px rgba(0,113,227,.12)'" onblur="this.style.borderColor='rgba(0,0,0,.1)';this.style.boxShadow='none'">
         <button id="yt-eye" style="
           width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.1);
-          background:rgba(255,255,255,.55);cursor:pointer;font-size:15px;
+          background:rgba(255,255,255,.55);cursor:pointer;
           display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;
-        " onmouseover="this.style.background='rgba(255,255,255,.8)'" onmouseout="this.style.background='rgba(255,255,255,.55)'">👁</button>
+        " onmouseover="this.style.background='rgba(255,255,255,.8)'" onmouseout="this.style.background='rgba(255,255,255,.55)'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         <button id="yt-save" style="
           padding:9px 16px;border-radius:12px;border:none;
           background:var(--t1);color:#fff;font-size:13px;font-weight:600;
@@ -157,8 +139,8 @@ const HTML = `
     <div class="s-group">
 
       <div class="s-row" id="s-export" style="cursor:pointer" onmouseover="this.style.background='rgba(0,0,0,.02)'" onmouseout="this.style.background=''">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#0ba360,#3cba92)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
         <div class="s-row-label">Export CSV</div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
@@ -166,12 +148,12 @@ const HTML = `
 
       <div class="s-div"></div>
 
-      <div class="s-row" id="s-clear" style="cursor:pointer" onmouseover="this.style.background='rgba(255,59,48,.04)'" onmouseout="this.style.background=''">
-        <div class="s-row-icon" style="background:linear-gradient(135deg,#ff416c,#ff4b2b)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      <div class="s-row" id="s-clear" style="cursor:pointer" onmouseover="this.style.background='rgba(0,0,0,.02)'" onmouseout="this.style.background=''">
+        <div class="s-row-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
         </div>
-        <div class="s-row-label" style="color:#ff3b30">Clear history</div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,59,48,.4)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="s-row-label">Clear history</div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
 
     </div>
@@ -215,16 +197,10 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .s-row-icon {
   width:30px;height:30px;border-radius:9px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  background:rgba(0,0,0,.07);
 }
 .s-row-label { font-size:13.5px;font-weight:500;color:var(--t1); }
 .s-div { height:1px;background:rgba(0,0,0,.055);margin:0 16px; }
-.sc {
-  width:22px;height:22px;border-radius:50%;border:2px solid transparent;
-  cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0;
-}
-.sc.on { border-color:var(--t1);transform:scale(1.18); }
-.sc:hover { transform:scale(1.1); }
 .s-select {
   padding:7px 28px 7px 11px;border-radius:10px;
   border:1px solid rgba(0,0,0,.1);
@@ -257,29 +233,6 @@ function closeSettings(){
 document.getElementById('s-x').onclick = closeSettings;
 document.getElementById('s-done').onclick = closeSettings;
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeSettings(); });
-
-// ── Accent color ──
-function applyAccent(hex){
-  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  const d=document.documentElement;
-  d.style.setProperty('--blue', hex);
-  d.style.setProperty('--blue-soft', `rgba(${r},${g},${b},.10)`);
-  d.style.setProperty('--blue-glow', `rgba(${r},${g},${b},.22)`);
-  localStorage.setItem('iq_accent', hex);
-}
-document.querySelectorAll('.sc').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('.sc').forEach(s => s.classList.remove('on'));
-    b.classList.add('on');
-    applyAccent(b.dataset.c);
-    document.getElementById('p-color').value = b.dataset.c;
-    window.showToast && showToast('Color updated ✓');
-  };
-});
-document.getElementById('p-color').oninput = e => {
-  document.querySelectorAll('.sc').forEach(s => s.classList.remove('on'));
-  applyAccent(e.target.value);
-};
 
 // ── Font size ──
 function applyFont(v){
@@ -370,10 +323,6 @@ document.getElementById('s-clear').onclick = async () => {
 
 // ── Sync UI from localStorage ──
 function syncUI(){
-  const acc = localStorage.getItem('iq_accent') || '#0071e3';
-  document.getElementById('p-color').value = acc;
-  document.querySelectorAll('.sc').forEach(s => s.classList.toggle('on', s.dataset.c === acc));
-
   const cor = localStorage.getItem('iq_corner') || 'default';
   document.querySelectorAll('#cg .s-seg-b').forEach(b => b.classList.toggle('on', b.dataset.v === cor));
 
@@ -389,7 +338,6 @@ function syncUI(){
 
 // ── Init on load ──
 (function init(){
-  const acc = localStorage.getItem('iq_accent'); if(acc) applyAccent(acc);
   const cor = localStorage.getItem('iq_corner'); if(cor) applyCorner(cor);
   const fnt = localStorage.getItem('iq_font');   if(fnt) applyFont(fnt);
   const cur = localStorage.getItem('iq_cur');
