@@ -491,7 +491,7 @@ async function fetchChannelAnalytics(url) {
             + Watchlist
           </button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
           <div>
             <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Views — last 10 videos</div>
             <div style="height:130px"><canvas id="analyticsViewsChart"></canvas></div>
