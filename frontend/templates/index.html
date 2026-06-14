@@ -330,11 +330,48 @@ select {
 .rrec  { font-size: 11px; font-weight: 600; }
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp  { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin    { to { transform: rotate(360deg); } }
-@keyframes iqFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes fadeUp    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin      { to { transform: rotate(360deg); } }
+@keyframes iqFloat   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes tabSlideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes tabSlideOut{ from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
 .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
 .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── TAB PANELS ── */
+.tab-panel { display: none; animation: tabSlideIn .38s cubic-bezier(.16,1,.3,1) both; }
+.tab-panel.active { display: block; }
+
+/* ── BUTTON HOVER ANIMATIONS ── */
+.btn-dark    { transition: opacity .18s, transform .15s, box-shadow .18s !important; }
+.btn-dark:hover    { opacity: .88; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.22); }
+.btn-dark:active   { transform: translateY(0) scale(.97); }
+.btn-outline { transition: background .18s, transform .15s, box-shadow .18s !important; }
+.btn-outline:hover { background: rgba(0,0,0,.05); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.08); }
+.btn-outline:active { transform: translateY(0) scale(.97); }
+.btn-blue-pill { transition: opacity .2s, transform .15s, box-shadow .2s !important; }
+.btn-blue-pill:hover { opacity: .88; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,113,227,.3); }
+.btn-blue-pill:active { transform: translateY(0) scale(.97); }
+
+/* ── CARD HOVER ── */
+.card { transition: box-shadow .22s, transform .22s; }
+.card:hover { box-shadow: 0 6px 28px rgba(0,0,0,.08); transform: translateY(-2px); }
+.card-dark { transition: box-shadow .22s, transform .22s; }
+.card-dark:hover { box-shadow: 0 6px 28px rgba(255,255,255,.06); transform: translateY(-2px); }
+
+/* ── NAV LINK ANIMATION ── */
+.nav-links a { position: relative; overflow: hidden; }
+.nav-links a::after { content:''; position:absolute; bottom:2px; left:50%; right:50%; height:1.5px; background:var(--t1); transition: left .2s, right .2s; border-radius:99px; }
+.nav-links a:hover::after { left:14px; right:14px; }
+
+/* ── DARK TAB ANIMATION ── */
+.dark-tab { transition: background .2s, color .2s, transform .15s !important; }
+.dark-tab:hover:not(.active) { transform: translateY(-1px); }
+.dark-tab.active { transform: none !important; }
+
+/* ── NAV BTN ── */
+.nav-btn { transition: background .15s, transform .15s !important; }
+.nav-btn:hover { transform: scale(1.08); }
 
 /* ── SCROLL REVEAL ── */
 .sr {
@@ -779,17 +816,17 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 
 <!-- ══ TOPNAV ════════════════════════════════════════════ -->
 <div class="nav-wrap"><nav class="nav">
-  <a class="nav-logo" onclick="scrollTo('home')">
+  <a class="nav-logo" onclick="navScrollTo('home')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="12" width="4" height="10" rx="1"/><rect x="9" y="7" width="4" height="15" rx="1"/><rect x="16" y="3" width="4" height="19" rx="1"/></svg>
     InfluenceIQ
   </a>
   <ul class="nav-links">
-    <li><a onclick="scrollTo('home')">Overview</a></li>
-    <li><a onclick="scrollTo('analyze')">Analyze</a></li>
-    <li><a onclick="scrollTo('insights')">Insights</a></li>
-    <li><a onclick="scrollTo('campaigns')">Campaigns</a></li>
-    <li><a onclick="scrollTo('reports')">Reports</a></li>
-    <li><a onclick="scrollTo('settings')">Settings</a></li>
+    <li><a onclick="navScrollTo('home')">Overview</a></li>
+    <li><a onclick="navScrollTo('analyze')">Analyze</a></li>
+    <li><a onclick="navScrollTo('insights')">Insights</a></li>
+    <li><a onclick="navScrollTo('campaigns')">Campaigns</a></li>
+    <li><a onclick="navScrollTo('reports')">Reports</a></li>
+    <li><a onclick="navScrollTo('settings')">Settings</a></li>
   </ul>
   <div class="nav-right">
     <button class="nav-btn nav-btn-desktop" title="Search" onclick="openSearch()">
@@ -819,11 +856,11 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 
 <!-- Mobile nav menu -->
 <div class="nav-mobile" id="navMobile">
-  <a onclick="scrollTo('home');closeMobileNav()">Overview</a>
-  <a onclick="scrollTo('analyze');closeMobileNav()">Analyze</a>
-  <a onclick="scrollTo('insights');closeMobileNav()">Insights</a>
-  <a onclick="scrollTo('campaigns');closeMobileNav()">Campaigns</a>
-  <a onclick="scrollTo('reports');closeMobileNav()">Reports</a>
+  <a onclick="navScrollTo('home');closeMobileNav()">Overview</a>
+  <a onclick="navScrollTo('analyze');closeMobileNav()">Analyze</a>
+  <a onclick="navScrollTo('insights');closeMobileNav()">Insights</a>
+  <a onclick="navScrollTo('campaigns');closeMobileNav()">Campaigns</a>
+  <a onclick="navScrollTo('reports');closeMobileNav()">Reports</a>
   <div style="height:1px;background:rgba(0,0,0,.07);margin:4px 16px"></div>
   <a onclick="openSettings();closeMobileNav()" style="display:flex;align-items:center;gap:10px">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -876,8 +913,8 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
         <h1 class="hero-h">Predict. Analyze.<br><span class="muted">Grow.</span></h1>
         <p class="body-copy" style="margin:20px auto;font-size:18px">AI-powered influencer analytics that forecast ROI, sales and audience quality before a single dollar is spent.</p>
         <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;flex-wrap:wrap">
-          <button class="btn-blue-pill" onclick="scrollTo('analyze')">Start free analysis</button>
-          <button class="btn-text" onclick="scrollTo('insights')">Watch the demo <span>›</span></button>
+          <button class="btn-blue-pill" onclick="navScrollTo('analyze')">Start free analysis</button>
+          <button class="btn-text" onclick="navScrollTo('insights')">Watch the demo <span>›</span></button>
         </div>
       </div>
 
@@ -918,7 +955,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
           <div class="recent-col">
             <div class="recent-header">
               <span class="recent-title">Recent analyses</span>
-              <span class="recent-link" style="color:var(--t3)" onclick="scrollTo('campaigns')">View all</span>
+              <span class="recent-link" style="color:var(--t3)" onclick="navScrollTo('campaigns')">View all</span>
             </div>
             <div id="recent-rows">
               <div class="rrow"><div class="rav">CR</div><div style="flex:1"><div class="rname">@creator</div><div class="rsub">TikTok</div></div><div style="text-align:right"><div class="rscore">8.6</div><div class="rroi" style="color:var(--t3)">+215%</div></div></div>
@@ -1142,100 +1179,338 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
         <button class="dark-tab" onclick="switchTab(this)">Risk</button>
       </div>
 
-      <div class="g2" style="align-items:start;gap:18px;padding-bottom:72px">
-        <!-- Left -->
-        <div>
-          <div class="card-dark" style="padding:24px;margin-bottom:14px">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
-              <div>
-                <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px">Audience Quality Score</div>
-                <div style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff">82 <span style="font-size:20px;font-weight:400;color:rgba(255,255,255,.4)">/100</span></div>
-                <span class="pill-tag" style="margin-top:10px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);display:inline-flex">Very Good</span>
-              </div>
-              <!-- Donut ring -->
-              <div style="position:relative;width:88px;height:88px;flex-shrink:0">
-                <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
-                  <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
-                  <circle cx="44" cy="44" r="34" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="38.4" class="arc"/>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff">82%</div>
-              </div>
-            </div>
-            <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">High-quality audience with low share of inauthentic followers.</p>
-          </div>
+      <!-- ══ TAB PANELS ══ -->
+      <div id="insightPanels" style="padding-bottom:72px">
 
-          <div class="g2" style="gap:12px;margin-bottom:14px">
-            <div class="card-dark" style="padding:20px">
-              <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Follower Authenticity</div>
-              <div style="font-size:28px;font-weight:800;color:#fff">91%</div>
-              <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px">9% potentially fake</div>
-              <div class="pbar-track"><div class="pbar-fill" data-w="91"></div></div>
+        <!-- Panel 1: Audience Quality -->
+        <div class="tab-panel active" id="iTab0">
+          <div class="g2" style="align-items:start;gap:18px">
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px">Audience Quality Score</div>
+                    <div style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff">82 <span style="font-size:20px;font-weight:400;color:rgba(255,255,255,.4)">/100</span></div>
+                    <span class="pill-tag" style="margin-top:10px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);display:inline-flex">Very Good</span>
+                  </div>
+                  <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+                    <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="38.4" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff">82%</div>
+                  </div>
+                </div>
+                <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">High-quality audience with low share of inauthentic followers.</p>
+              </div>
+              <div class="g2" style="gap:12px;margin-bottom:14px">
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Follower Authenticity</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">91%</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px">9% potentially fake</div>
+                  <div class="pbar-track"><div class="pbar-fill" data-w="91"></div></div>
+                </div>
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Engagement</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">7.6%</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px">Excellent for niche</div>
+                  <div style="height:44px"><canvas id="engChart"></canvas></div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:20px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Audience breakdown</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Real Followers</span><span style="font-size:13px;font-weight:700;color:#fff">91%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="91"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Good Followers</span><span style="font-size:13px;font-weight:700;color:#fff">84%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="84"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Active Audience</span><span style="font-size:13px;font-weight:700;color:#fff">73%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="73"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Niche Match</span><span style="font-size:13px;font-weight:700;color:#fff">88%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="88"></div></div></div>
+                </div>
+              </div>
             </div>
-            <div class="card-dark" style="padding:20px">
-              <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Engagement</div>
-              <div style="font-size:28px;font-weight:800;color:#fff">7.6%</div>
-              <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px">Excellent for niche</div>
-              <div style="height:44px"><canvas id="engChart"></canvas></div>
-            </div>
-          </div>
-
-          <!-- Audience breakdown -->
-          <div class="card-dark" style="padding:20px">
-            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Audience breakdown</div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Real Followers</span><span style="font-size:13px;font-weight:700;color:#fff">91%</span></div>
-                <div class="pbar-track"><div class="pbar-fill" data-w="91"></div></div>
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Key insights</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:#34d399">✓</span> Excellent audience authenticity</div>
+                  <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:#34d399">✓</span> High engagement rate for the niche</div>
+                  <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:#34d399">✓</span> Strong follower growth trajectory</div>
+                  <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:#34d399">✓</span> Low risk of inauthentic engagement</div>
+                </div>
+                <button class="btn-outline" style="width:100%;margin-top:20px;color:#fff;border-color:rgba(255,255,255,.25);background:transparent;padding:12px 24px;font-size:14px" onclick="navScrollTo('analyze')">Run new analysis →</button>
               </div>
-              <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Good Followers</span><span style="font-size:13px;font-weight:700;color:#fff">84%</span></div>
-                <div class="pbar-track"><div class="pbar-fill" data-w="84"></div></div>
-              </div>
-              <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Active Audience</span><span style="font-size:13px;font-weight:700;color:#fff">73%</span></div>
-                <div class="pbar-track"><div class="pbar-fill" data-w="73"></div></div>
-              </div>
-              <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Niche Match</span><span style="font-size:13px;font-weight:700;color:#fff">88%</span></div>
-                <div class="pbar-track"><div class="pbar-fill" data-w="88"></div></div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Quality distribution</div>
+                <div style="display:flex;align-items:center;gap:20px">
+                  <div style="position:relative;width:80px;height:80px;flex-shrink:0">
+                    <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="#fff" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="33.9" class="arc"/>
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="154.6" transform="rotate(-64.8 40 40)" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff">82%</div>
+                  </div>
+                  <div style="flex:1">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:8px;height:8px;border-radius:50%;background:#fff;flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">High</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">82%</span></div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Medium</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">15%</span></div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Low</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">3%</span></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Right -->
-        <div>
-          <div class="card-dark" style="padding:24px;margin-bottom:14px">
-            <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Key insights</div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:rgba(255,255,255,.5)">✓</span> Excellent audience authenticity</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:rgba(255,255,255,.5)">✓</span> High engagement rate for the niche</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:rgba(255,255,255,.5)">✓</span> Strong follower growth trajectory</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75)"><span style="color:rgba(255,255,255,.5)">✓</span> Low risk of inauthentic engagement</div>
-            </div>
-            <button class="btn-outline" style="width:100%;margin-top:20px;color:#fff;border-color:rgba(255,255,255,.25);background:transparent;padding:12px 24px;font-size:14px" onclick="scrollTo('analyze')">Run new analysis →</button>
-          </div>
-          <div class="card-dark" style="padding:24px">
-            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Quality distribution</div>
-            <div style="display:flex;align-items:center;gap:20px">
-              <!-- Donut -->
-              <div style="position:relative;width:80px;height:80px;flex-shrink:0">
-                <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
-                  <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
-                  <circle cx="40" cy="40" r="30" fill="none" stroke="#fff" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="33.9" class="arc"/>
-                  <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="154.6" transform="rotate(-64.8 40 40)" class="arc"/>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff">82%</div>
+        <!-- Panel 2: Engagement -->
+        <div class="tab-panel" id="iTab1">
+          <div class="g2" style="align-items:start;gap:18px">
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px">Engagement Rate</div>
+                    <div style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff">7.6<span style="font-size:20px;font-weight:400;color:rgba(255,255,255,.4)">%</span></div>
+                    <span class="pill-tag" style="margin-top:10px;background:rgba(52,211,153,.15);color:#34d399;display:inline-flex">Excellent</span>
+                  </div>
+                  <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+                    <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="#34d399" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="50" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#34d399">Top<br style="line-height:.5">5%</div>
+                  </div>
+                </div>
+                <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Engagement rate is 3.2× higher than the category average of 2.4%.</p>
               </div>
-              <div style="flex:1">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:8px;height:8px;border-radius:50%;background:#fff;flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">High</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">82%</span></div>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Medium</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">15%</span></div>
-                <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Low</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#fff">3%</span></div>
+              <div class="g2" style="gap:12px;margin-bottom:14px">
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Avg Likes</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">219.8K</div>
+                  <div style="font-size:12px;color:#34d399;margin-top:4px">+12% vs last month</div>
+                </div>
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Avg Comments</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">4.2K</div>
+                  <div style="font-size:12px;color:#34d399;margin-top:4px">+8% vs last month</div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:20px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Engagement by content type</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Short videos</span><span style="font-size:13px;font-weight:700;color:#fff">11.2%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="89" style="background:#34d399"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Tutorials</span><span style="font-size:13px;font-weight:700;color:#fff">8.7%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="70" style="background:#34d399"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Product reviews</span><span style="font-size:13px;font-weight:700;color:#fff">6.1%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="49" style="background:#34d399"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Static posts</span><span style="font-size:13px;font-weight:700;color:#fff">3.4%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="27" style="background:#34d399"></div></div></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Benchmarks vs niche</div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(52,211,153,.08);border-radius:10px;border:1px solid rgba(52,211,153,.2)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.7)">This influencer</span>
+                    <span style="font-size:18px;font-weight:800;color:#34d399">7.6%</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,.04);border-radius:10px">
+                    <span style="font-size:13px;color:rgba(255,255,255,.7)">Niche average</span>
+                    <span style="font-size:18px;font-weight:800;color:rgba(255,255,255,.6)">2.4%</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,.04);border-radius:10px">
+                    <span style="font-size:13px;color:rgba(255,255,255,.7)">Top 10% in niche</span>
+                    <span style="font-size:18px;font-weight:800;color:rgba(255,255,255,.6)">5.1%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Engagement tips</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#34d399;flex-shrink:0">→</span> Post short-form videos for maximum reach</div>
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#34d399;flex-shrink:0">→</span> Reply to top comments within 2 hours of posting</div>
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#34d399;flex-shrink:0">→</span> Use polls and Q&amp;A stickers in stories</div>
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#34d399;flex-shrink:0">→</span> Peak posting window: Tue–Thu, 6–9 PM</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <!-- Panel 3: Growth Potential -->
+        <div class="tab-panel" id="iTab2">
+          <div class="g2" style="align-items:start;gap:18px">
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px">Growth Velocity</div>
+                    <div style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff">+2.3<span style="font-size:22px;font-weight:400;color:rgba(255,255,255,.4)">%/mo</span></div>
+                    <span class="pill-tag" style="margin-top:10px;background:rgba(99,179,237,.15);color:#63b3ed;display:inline-flex">Accelerating</span>
+                  </div>
+                  <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+                    <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="#63b3ed" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="64" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#63b3ed">Top<br style="line-height:.5">15%</div>
+                  </div>
+                </div>
+                <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">At current trajectory, channel will cross 2M followers in ≈ 7 months.</p>
+              </div>
+              <div class="card-dark" style="padding:20px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">6-month follower forecast</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">Now</span><span style="font-size:14px;font-weight:700;color:#fff">1.43M</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">+1 month</span><span style="font-size:14px;font-weight:700;color:#63b3ed">1.46M</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">+3 months</span><span style="font-size:14px;font-weight:700;color:#63b3ed">1.53M</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">+6 months</span><span style="font-size:14px;font-weight:700;color:#63b3ed">1.67M</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">+12 months</span><span style="font-size:14px;font-weight:700;color:#63b3ed">2.02M</span></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Growth drivers</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Content virality</span><span style="font-size:13px;font-weight:700;color:#fff">High</span></div><div class="pbar-track"><div class="pbar-fill" data-w="80" style="background:#63b3ed"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Algorithm favor</span><span style="font-size:13px;font-weight:700;color:#fff">Very High</span></div><div class="pbar-track"><div class="pbar-fill" data-w="90" style="background:#63b3ed"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Cross-platform presence</span><span style="font-size:13px;font-weight:700;color:#fff">Medium</span></div><div class="pbar-track"><div class="pbar-fill" data-w="55" style="background:#63b3ed"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Collaboration activity</span><span style="font-size:13px;font-weight:700;color:#fff">High</span></div><div class="pbar-track"><div class="pbar-fill" data-w="75" style="background:#63b3ed"></div></div></div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:14px">Growth recommendations</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#63b3ed;flex-shrink:0">→</span> Increase posting cadence from 4 to 6×/week</div>
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#63b3ed;flex-shrink:0">→</span> Expand to TikTok for additional reach</div>
+                  <div style="display:flex;gap:10px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:#63b3ed;flex-shrink:0">→</span> Collab with 2–3 similar-size creators/month</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Demographics -->
+        <div class="tab-panel" id="iTab3">
+          <div class="g2" style="align-items:start;gap:18px">
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Age distribution</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">18–24</span><span style="font-size:13px;font-weight:700;color:#fff">34%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="34" style="background:#a78bfa"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">25–34</span><span style="font-size:13px;font-weight:700;color:#fff">28%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="28" style="background:#a78bfa"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">35–44</span><span style="font-size:13px;font-weight:700;color:#fff">22%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="22" style="background:#a78bfa"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">45+</span><span style="font-size:13px;font-weight:700;color:#fff">16%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="16" style="background:#a78bfa"></div></div></div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Gender split</div>
+                <div style="display:flex;align-items:center;gap:20px">
+                  <div style="position:relative;width:80px;height:80px;flex-shrink:0">
+                    <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="#f472b6" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="75.4" class="arc"/>
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="#60a5fa" stroke-width="10" stroke-dasharray="188.5" stroke-dashoffset="150.8" transform="rotate(-129.6 40 40)" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">58/42</div>
+                  </div>
+                  <div style="flex:1">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:8px;height:8px;border-radius:50%;background:#f472b6;flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Female</span><span style="margin-left:auto;font-size:14px;font-weight:700;color:#fff">58%</span></div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#60a5fa;flex-shrink:0"></div><span style="font-size:13px;color:rgba(255,255,255,.7)">Male</span><span style="margin-left:auto;font-size:14px;font-weight:700;color:#fff">42%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Top countries</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.7)">🇺🇸 United States</span><span style="font-size:13px;font-weight:700;color:#fff">38%</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.7)">🇬🇧 United Kingdom</span><span style="font-size:13px;font-weight:700;color:#fff">14%</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.7)">🇨🇦 Canada</span><span style="font-size:13px;font-weight:700;color:#fff">11%</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.7)">🇦🇺 Australia</span><span style="font-size:13px;font-weight:700;color:#fff">9%</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.7)">🌍 Other</span><span style="font-size:13px;font-weight:700;color:#fff">28%</span></div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Device split</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Mobile</span><span style="font-size:13px;font-weight:700;color:#fff">74%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="74" style="background:#a78bfa"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Desktop</span><span style="font-size:13px;font-weight:700;color:#fff">19%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="19" style="background:#a78bfa"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,.7)">Tablet</span><span style="font-size:13px;font-weight:700;color:#fff">7%</span></div><div class="pbar-track"><div class="pbar-fill" data-w="7" style="background:#a78bfa"></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 5: Risk -->
+        <div class="tab-panel" id="iTab4">
+          <div class="g2" style="align-items:start;gap:18px">
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px">Risk Score</div>
+                    <div style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff">18 <span style="font-size:20px;font-weight:400;color:rgba(255,255,255,.4)">/100</span></div>
+                    <span class="pill-tag" style="margin-top:10px;background:rgba(52,211,153,.12);color:#34d399;display:inline-flex">Low Risk</span>
+                  </div>
+                  <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+                    <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+                      <circle cx="44" cy="44" r="34" fill="none" stroke="#34d399" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="175" class="arc"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#34d399">Safe</div>
+                  </div>
+                </div>
+                <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Very low risk profile. Safe for brand partnerships and sponsored content.</p>
+              </div>
+              <div class="g2" style="gap:12px;margin-bottom:14px">
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Fake Followers</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">9%</div>
+                  <div style="font-size:12px;color:#34d399;margin-top:4px">Industry avg: 21%</div>
+                </div>
+                <div class="card-dark" style="padding:20px">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Bot Activity</div>
+                  <div style="font-size:28px;font-weight:800;color:#fff">3%</div>
+                  <div style="font-size:12px;color:#34d399;margin-top:4px">Very low</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card-dark" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px">Risk factors</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(52,211,153,.07);border-radius:10px;border:1px solid rgba(52,211,153,.18)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.8)">Fake follower ratio</span>
+                    <span style="font-size:12px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);padding:3px 10px;border-radius:99px">Low</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(52,211,153,.07);border-radius:10px;border:1px solid rgba(52,211,153,.18)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.8)">Bot engagement</span>
+                    <span style="font-size:12px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);padding:3px 10px;border-radius:99px">Very Low</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(251,191,36,.07);border-radius:10px;border:1px solid rgba(251,191,36,.18)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.8)">Sponsored content ratio</span>
+                    <span style="font-size:12px;font-weight:700;color:#fbbf24;background:rgba(251,191,36,.15);padding:3px 10px;border-radius:99px">Medium</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(52,211,153,.07);border-radius:10px;border:1px solid rgba(52,211,153,.18)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.8)">Controversial content</span>
+                    <span style="font-size:12px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);padding:3px 10px;border-radius:99px">None detected</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(52,211,153,.07);border-radius:10px;border:1px solid rgba(52,211,153,.18)">
+                    <span style="font-size:13px;color:rgba(255,255,255,.8)">Audience drop patterns</span>
+                    <span style="font-size:12px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);padding:3px 10px;border-radius:99px">None detected</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-dark" style="padding:24px">
+                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:14px">Verdict</div>
+                <p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin:0">This account shows strong signals of organic growth and authentic engagement. No red flags detected. Suitable for long-term brand partnerships.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /insightPanels -->
     </div>
   </section>
 
@@ -1358,7 +1633,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
         </div>
       </div>
       <div style="text-align:center;padding-bottom:56px">
-        <a onclick="scrollTo('reports')" style="font-size:15px;font-weight:500;color:#0071e3;cursor:pointer;text-decoration:none">See reports for these campaigns →</a>
+        <a onclick="navScrollTo('reports')" style="font-size:15px;font-weight:500;color:#0071e3;cursor:pointer;text-decoration:none">See reports for these campaigns →</a>
       </div>
     </div>
   </section>
@@ -1428,7 +1703,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
             </div>
             <div class="set-row">
               <div style="flex:1"><div class="set-label">Plan</div><div class="set-sub">Starter (Free)</div></div>
-              <button class="btn-blue-pill btn-sm" onclick="scrollTo('pricing')">Upgrade</button>
+              <button class="btn-blue-pill btn-sm" onclick="navScrollTo('pricing')">Upgrade</button>
             </div>
             <div class="set-row">
               <div style="flex:1"><div class="set-label">Email</div><div class="set-sub" id="acc-email">kostya@influenceiq.app</div></div>
@@ -1537,7 +1812,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <div class="footer-inner">
       <p class="footer-disclaimer">InfluenceIQ is a creator-economy analytics suite. Forecasts are based on historical performance and aren't guaranteed. Mock data is shown on this preview page.</p>
       <div class="footer-grid">
-        <div class="footer-col"><div class="footer-col-title">Product</div><a onclick="scrollTo('home')" style="cursor:pointer">Overview</a><a onclick="scrollTo('analyze')" style="cursor:pointer">Analyze</a><a onclick="scrollTo('insights')" style="cursor:pointer">Insights</a><a onclick="scrollTo('campaigns')" style="cursor:pointer">Campaigns</a></div>
+        <div class="footer-col"><div class="footer-col-title">Product</div><a onclick="navScrollTo('home')" style="cursor:pointer">Overview</a><a onclick="navScrollTo('analyze')" style="cursor:pointer">Analyze</a><a onclick="navScrollTo('insights')" style="cursor:pointer">Insights</a><a onclick="navScrollTo('campaigns')" style="cursor:pointer">Campaigns</a></div>
         <div class="footer-col"><div class="footer-col-title">Resources</div><a onclick="toast('Docs coming soon')" style="cursor:pointer">Docs</a><a onclick="toast('Guides coming soon')" style="cursor:pointer">Guides</a><a onclick="toast('API docs coming soon')" style="cursor:pointer">API</a><a onclick="toast('All systems operational ✓')" style="cursor:pointer">Status</a></div>
         <div class="footer-col"><div class="footer-col-title">Company</div><a onclick="toast('About page coming soon')" style="cursor:pointer">About</a><a onclick="toast('No open positions yet')" style="cursor:pointer">Careers</a><a onclick="toast('Press kit coming soon')" style="cursor:pointer">Press</a><a onclick="contactSales()" style="cursor:pointer">Contact</a></div>
         <div class="footer-col"><div class="footer-col-title">Legal</div><a onclick="showLegalModal('Privacy')" style="cursor:pointer">Privacy</a><a onclick="showLegalModal('Terms')" style="cursor:pointer">Terms</a><a onclick="toast('Cookies: we use only essential cookies')" style="cursor:pointer">Cookies</a><a onclick="toast('Open source licenses available on request')" style="cursor:pointer">Licenses</a></div>
@@ -1545,7 +1820,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
       </div>
       <div class="footer-bottom">
         <span class="footer-copy">Copyright © 2025 InfluenceIQ Inc. All rights reserved.</span>
-        <div class="footer-legal"><a onclick="showLegalModal('Privacy')" style="cursor:pointer">Privacy</a><a onclick="showLegalModal('Terms')" style="cursor:pointer">Terms</a><a onclick="toast('Refund requests: billing@influenceiq.app')" style="cursor:pointer">Sales &amp; refunds</a><a onclick="scrollTo('home');toast('Navigated to top')" style="cursor:pointer">Site map</a></div>
+        <div class="footer-legal"><a onclick="showLegalModal('Privacy')" style="cursor:pointer">Privacy</a><a onclick="showLegalModal('Terms')" style="cursor:pointer">Terms</a><a onclick="toast('Refund requests: billing@influenceiq.app')" style="cursor:pointer">Sales &amp; refunds</a><a onclick="navScrollTo('home');toast('Navigated to top')" style="cursor:pointer">Site map</a></div>
       </div>
     </div>
   </footer>
@@ -1555,16 +1830,16 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 <!-- ══ JS ══════════════════════════════════════════════ -->
 <script>
 /* ── Scroll navigation ── */
-function scrollTo(id) {
+function navScrollTo(id) {
   const el = document.getElementById('page-' + id);
-  if (!el) return;
+  if (!el) { return; }
   const top = el.getBoundingClientRect().top + window.scrollY - 52 - 8;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
 /* app.js compatibility */
 function switchView(name) {
-  scrollTo(name);
+  navScrollTo(name);
   if (name === 'history') setTimeout(() => { if (typeof loadHistory === 'function') loadHistory(); }, 400);
   if (name === 'home')    setTimeout(() => { if (typeof initHomeChart === 'function') initHomeChart(); }, 400);
 }
@@ -1617,8 +1892,22 @@ function animBars(root) {
 
 /* Insights tabs */
 function switchTab(btn) {
-  document.querySelectorAll('#itabs .dark-tab').forEach(t => t.classList.remove('active'));
+  const tabs = [...document.querySelectorAll('#itabs .dark-tab')];
+  const idx  = tabs.indexOf(btn);
+  tabs.forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach((p, i) => {
+    if (i === idx) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+  // Re-animate progress bars in the newly shown panel
+  btn.closest('section').querySelectorAll('#iTab' + idx + ' .pbar-fill').forEach(el => {
+    el.style.width = '0';
+    requestAnimationFrame(() => { el.style.transition = 'width .7s ease'; el.style.width = (el.dataset.w || 0) + '%'; });
+  });
 }
 
 /* Pricing toggle */
@@ -1944,7 +2233,7 @@ document.addEventListener('keydown', function(e) {
 
 /* ── SEARCH ──────────────────────────────────────────────── */
 function openSearch() {
-  scrollTo('analyze');
+  navScrollTo('analyze');
   setTimeout(() => {
     const inp = document.getElementById('blogger-link');
     if (inp) { inp.focus(); inp.select(); }
@@ -2053,7 +2342,7 @@ function generateReport() {
     else toast('Report ready — run an analysis first');
   } else {
     toast('Run an analysis first to generate a report');
-    setTimeout(() => scrollTo('analyze'), 700);
+    setTimeout(() => navScrollTo('analyze'), 700);
   }
 }
 
@@ -2063,7 +2352,7 @@ function reportDownload() {
     else toast('Analysis result ready — use Download Report button after analysis');
   } else {
     toast('Run an analysis first, then download your report');
-    setTimeout(() => scrollTo('analyze'), 700);
+    setTimeout(() => navScrollTo('analyze'), 700);
   }
 }
 
