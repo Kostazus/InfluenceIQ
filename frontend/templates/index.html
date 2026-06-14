@@ -909,11 +909,35 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
         <input type="email" id="authEmail" placeholder="you@example.com" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
       </div>
       <div style="margin-bottom:20px">
-        <label class="lbl">Password</label>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <label class="lbl" style="margin:0">Password</label>
+          <button id="forgotLink" onclick="switchAuthTab('forgot')" style="font-size:12px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;transition:color .15s" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">Forgot password?</button>
+        </div>
         <input type="password" id="authPassword" placeholder="••••••••" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
       </div>
       <div id="authError" style="display:none;font-size:13px;color:#c0392b;background:rgba(192,57,43,.08);padding:10px 14px;border-radius:10px;margin-bottom:16px"></div>
       <button id="authSubmit" onclick="submitAuth()" style="width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:14px;background:var(--t1);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .18s,transform .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Sign in</button>
+
+      <!-- Forgot password form (hidden by default) -->
+      <div id="forgotForm" style="display:none">
+        <div style="margin-bottom:14px">
+          <label class="lbl">Your email</label>
+          <input type="email" id="forgotEmail" placeholder="you@example.com" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
+        </div>
+        <div id="forgotMsg" style="display:none;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:14px"></div>
+        <button onclick="submitForgot()" style="width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:14px;background:var(--t1);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .18s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Send reset link</button>
+        <button onclick="switchAuthTab('login')" style="width:100%;padding:10px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:inherit;color:var(--t3);margin-top:8px">← Back to Sign in</button>
+      </div>
+
+      <!-- Reset password form (shown when ?token= in URL) -->
+      <div id="resetForm" style="display:none">
+        <div style="margin-bottom:14px">
+          <label class="lbl">New password</label>
+          <input type="password" id="resetPassword" placeholder="At least 6 characters" style="background:rgba(255,255,255,.6);backdrop-filter:blur(8px)">
+        </div>
+        <div id="resetMsg" style="display:none;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:14px"></div>
+        <button onclick="submitReset()" style="width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:14px;background:var(--t1);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .18s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Set new password</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2134,17 +2158,97 @@ function closeAuthModal(e) {
 
 function switchAuthTab(mode) {
   authMode = mode;
-  const isLogin = mode === 'login';
-  document.getElementById('fieldName').style.display = isLogin ? 'none' : 'block';
-  document.getElementById('authSubmit').textContent = isLogin ? 'Sign in' : 'Create account';
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authTitle').textContent = isLogin ? 'Welcome back' : 'Create account';
-  document.getElementById('authSubtitle').textContent = isLogin ? 'Sign in to your InfluenceIQ account' : 'Join InfluenceIQ — it\'s free';
+  const isLogin    = mode === 'login';
+  const isForgot   = mode === 'forgot';
+  const isReset    = mode === 'reset';
+  const isNormal   = isLogin || mode === 'register';
 
-  const activeStyle = 'flex:1;padding:9px;font-size:13px;font-weight:600;border:none;background:#fff;cursor:pointer;font-family:inherit;color:var(--t1);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.1);transition:all .2s';
+  // Показываем/скрываем блоки
+  document.getElementById('fieldName').style.display     = mode === 'register' ? 'block' : 'none';
+  document.getElementById('authEmail').closest('div').style.display = isNormal ? 'block' : 'none';
+  document.getElementById('authPassword').closest('div').style.display = isNormal ? 'block' : 'none';
+  document.getElementById('authSubmit').style.display    = isNormal ? 'block' : 'none';
+  document.getElementById('forgotForm').style.display    = isForgot ? 'block' : 'none';
+  document.getElementById('resetForm').style.display     = isReset  ? 'block' : 'none';
+  document.getElementById('forgotLink').style.display    = isLogin  ? 'inline' : 'none';
+  document.getElementById('authError').style.display     = 'none';
+
+  if (isNormal) {
+    document.getElementById('authSubmit').textContent = isLogin ? 'Sign in' : 'Create account';
+    document.getElementById('authTitle').textContent  = isLogin ? 'Welcome back' : 'Create account';
+    document.getElementById('authSubtitle').textContent = isLogin
+      ? 'Sign in to your InfluenceIQ account'
+      : 'Join InfluenceIQ — it\'s free';
+  } else if (isForgot) {
+    document.getElementById('authTitle').textContent    = 'Reset password';
+    document.getElementById('authSubtitle').textContent = 'Enter your email to receive a reset link';
+    document.getElementById('forgotMsg').style.display  = 'none';
+  } else if (isReset) {
+    document.getElementById('authTitle').textContent    = 'New password';
+    document.getElementById('authSubtitle').textContent = 'Enter your new password below';
+    document.getElementById('resetMsg').style.display   = 'none';
+  }
+
+  const activeStyle   = 'flex:1;padding:9px;font-size:13px;font-weight:600;border:none;background:#fff;cursor:pointer;font-family:inherit;color:var(--t1);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.1);transition:all .2s';
   const inactiveStyle = 'flex:1;padding:9px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:inherit;color:var(--t2);border-radius:10px;transition:all .2s';
-  document.getElementById('tabLogin').style.cssText = isLogin ? activeStyle : inactiveStyle;
-  document.getElementById('tabRegister').style.cssText = !isLogin ? activeStyle : inactiveStyle;
+  document.getElementById('tabLogin').style.cssText    = isLogin ? activeStyle : inactiveStyle;
+  document.getElementById('tabRegister').style.cssText = mode === 'register' ? activeStyle : inactiveStyle;
+}
+
+async function submitForgot() {
+  const email = (document.getElementById('forgotEmail').value || '').trim();
+  const msgEl = document.getElementById('forgotMsg');
+  if (!email) { _showForgotMsg('Enter your email', false); return; }
+
+  try {
+    const res  = await fetch('/api/forgot-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    _showForgotMsg(data.message || 'Check your email', true);
+  } catch {
+    _showForgotMsg('Network error', false);
+  }
+}
+
+function _showForgotMsg(text, ok) {
+  const el = document.getElementById('forgotMsg');
+  el.textContent = text;
+  el.style.background = ok ? 'rgba(52,211,153,.1)' : 'rgba(192,57,43,.08)';
+  el.style.color      = ok ? '#059669' : '#c0392b';
+  el.style.display    = 'block';
+}
+
+async function submitReset() {
+  const password = (document.getElementById('resetPassword').value || '').trim();
+  const token    = new URLSearchParams(location.search).get('token') || '';
+  const msgEl    = document.getElementById('resetMsg');
+
+  if (!password || password.length < 6) {
+    _showResetMsg('Password must be at least 6 characters', false); return;
+  }
+
+  try {
+    const res  = await fetch('/api/reset-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ token, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { _showResetMsg(data.detail || 'Error', false); return; }
+    _showResetMsg('Password changed! Sign in now.', true);
+    setTimeout(() => { history.replaceState({}, '', '/'); switchAuthTab('login'); }, 1800);
+  } catch {
+    _showResetMsg('Network error', false);
+  }
+}
+
+function _showResetMsg(text, ok) {
+  const el = document.getElementById('resetMsg');
+  el.textContent = text;
+  el.style.background = ok ? 'rgba(52,211,153,.1)' : 'rgba(192,57,43,.08)';
+  el.style.color      = ok ? '#059669' : '#c0392b';
+  el.style.display    = 'block';
 }
 
 async function submitAuth() {
@@ -2238,6 +2342,15 @@ document.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', () => {
   loadUser();
   setTimeout(() => { if (typeof loadWatchlist === 'function') loadWatchlist(); }, 600);
+
+  // Авто-открытие модалки сброса пароля если в URL есть ?token=
+  const resetToken = new URLSearchParams(location.search).get('token');
+  if (resetToken) {
+    setTimeout(() => {
+      openAuthModal();
+      switchAuthTab('reset');
+    }, 300);
+  }
 });
 
 // Enter key submits auth form

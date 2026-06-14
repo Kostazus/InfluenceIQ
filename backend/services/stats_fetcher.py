@@ -5,12 +5,33 @@ YouTube Data API v3 — channel & video URLs, real engagement from recent videos
 
 import os
 import re
+import time
+import logging
 import httpx
 from typing import Optional
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger("influenceiq.stats")
+
+# ── In-memory cache {normalized_url: (BloggerStats, cached_at)} ──
+_yt_cache: dict[str, tuple["BloggerStats", float]] = {}
+CACHE_TTL = 3 * 3600  # 3 часа
+
+
+def _cache_get(url: str) -> Optional["BloggerStats"]:
+    key = url.strip().lower()
+    entry = _yt_cache.get(key)
+    if entry and (time.time() - entry[1]) < CACHE_TTL:
+        logger.info("YT cache HIT: %s", key[:60])
+        return entry[0]
+    return None
+
+
+def _cache_set(url: str, stats: "BloggerStats") -> None:
+    _yt_cache[url.strip().lower()] = (stats, time.time())
 
 
 @dataclass
@@ -162,10 +183,16 @@ async def _channel_stats(client: httpx.AsyncClient, channel_id: str, api_key: st
 
 
 async def fetch_youtube_stats(url: str) -> Optional[BloggerStats]:
+    # ── Проверяем кэш ──
+    cached = _cache_get(url)
+    if cached:
+        return cached
+
     api_key = os.getenv("YOUTUBE_API_KEY")
     if not api_key:
         return None
 
+    logger.info("YT API request: %s", url[:80])
     async with httpx.AsyncClient(timeout=15) as client:
         video_id   = extract_video_id(url)
         chan_handle = extract_channel_handle(url)
@@ -202,7 +229,7 @@ async def fetch_youtube_stats(url: str) -> Optional[BloggerStats]:
                 if ch_items:
                     subscribers = int(ch_items[0]["statistics"].get("subscriberCount", 0))
 
-            return BloggerStats(
+            result = BloggerStats(
                 platform="youtube",
                 views=views,
                 likes=likes,
@@ -211,13 +238,18 @@ async def fetch_youtube_stats(url: str) -> Optional[BloggerStats]:
                 channel_url=channel_url,
                 engagement_rate=real_er,
             )
+            _cache_set(url, result)
+            return result
 
         elif chan_handle:
             # ── Channel URL ────────────────────────────────────────
             channel_id = await _resolve_channel_id(client, chan_handle, api_key)
             if not channel_id:
                 return None
-            return await _channel_stats(client, channel_id, api_key)
+            result = await _channel_stats(client, channel_id, api_key)
+            if result:
+                _cache_set(url, result)
+            return result
 
     return None
 

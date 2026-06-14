@@ -49,10 +49,23 @@ async def init_db():
         """)
         await db.commit()
 
+        # ── Таблица токенов сброса пароля ──
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS reset_tokens (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id    INTEGER NOT NULL,
+                token      TEXT UNIQUE NOT NULL,
+                expires_at TEXT NOT NULL,
+                used       INTEGER DEFAULT 0
+            )
+        """)
+        await db.commit()
+
         # Migrations — safe on existing DBs
         for col_sql in [
             "ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0",
             "ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))",
+            "ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 1",
             "ALTER TABLE history ADD COLUMN user_id INTEGER",
             "ALTER TABLE history ADD COLUMN channel_name TEXT",
             "ALTER TABLE history ADD COLUMN channel_url TEXT",
