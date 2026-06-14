@@ -17,17 +17,7 @@ document.querySelectorAll('[data-view]').forEach(el => {
   el.addEventListener('click', e => { e.preventDefault(); switchView(el.dataset.view); });
 });
 
-// ── THEME ─────────────────────────────────────────────────────
-function setTheme(t) {
-  // Premium design is light-first; dark just adds filter
-  localStorage.setItem('iq_theme', t);
-  const btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
-}
-document.getElementById('themeBtn')?.addEventListener('click', () => {
-  const isDark = localStorage.getItem('iq_theme') === 'dark';
-  setTheme(isDark ? 'light' : 'dark');
-});
+// ── THEME (unused — notifications button handles notifBtn) ────
 
 // ── FORM ──────────────────────────────────────────────────────
 const form       = document.getElementById('form');

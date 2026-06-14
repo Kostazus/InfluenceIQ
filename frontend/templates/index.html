@@ -792,10 +792,10 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <li><a onclick="scrollTo('settings')">Settings</a></li>
   </ul>
   <div class="nav-right">
-    <button class="nav-btn nav-btn-desktop" title="Search">
+    <button class="nav-btn nav-btn-desktop" title="Search" onclick="openSearch()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
-    <button class="nav-btn nav-btn-desktop" id="themeBtn" title="Notifications">
+    <button class="nav-btn nav-btn-desktop" id="notifBtn" title="Notifications" onclick="toggleNotifPanel(event)">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </button>
     <button class="nav-btn nav-btn-desktop" onclick="openSettings()" title="Settings">
@@ -1268,7 +1268,7 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 
       <div class="row-between" style="margin-bottom:16px">
         <h3 style="font-size:20px;font-weight:700">All campaigns</h3>
-        <button class="btn-dark btn-sm">+ New campaign</button>
+        <button class="btn-dark btn-sm" onclick="newCampaign()">+ New campaign</button>
       </div>
 
       <div class="card" style="padding:0 20px;margin-bottom:16px">
@@ -1374,14 +1374,14 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
 
       <div class="row-between" style="margin-bottom:16px">
         <h3 style="font-size:20px;font-weight:700">Recent reports</h3>
-        <button class="btn-blue-pill btn-sm">Generate report →</button>
+        <button class="btn-blue-pill btn-sm" onclick="generateReport()">Generate report →</button>
       </div>
 
       <div class="card" style="padding:0 20px;margin-bottom:56px">
-        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Q2 Campaign Performance Report</div><div class="rep-meta">May 12, 2025 · 4.2 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
-        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Influencer ROI Analysis — May 2025</div><div class="rep-meta">May 10, 2025 · 2.8 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
-        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Audience Demographics Deep Dive</div><div class="rep-meta">May 7, 2025 · 6.1 MB</div></div><span class="pill-tag pill-amber">Processing</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px;opacity:.4;cursor:not-allowed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
-        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Brand Lift Study Q1</div><div class="rep-meta">Mar 30, 2025 · 3.4 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
+        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Q2 Campaign Performance Report</div><div class="rep-meta">May 12, 2025 · 4.2 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px" onclick="reportDownload()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
+        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Influencer ROI Analysis — May 2025</div><div class="rep-meta">May 10, 2025 · 2.8 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px" onclick="reportDownload()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
+        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Audience Demographics Deep Dive</div><div class="rep-meta">May 7, 2025 · 6.1 MB</div></div><span class="pill-tag pill-amber">Processing</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px;opacity:.4;cursor:not-allowed" disabled><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Processing…</button></div>
+        <div class="rep-row"><div class="rep-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="rep-name">Brand Lift Study Q1</div><div class="rep-meta">Mar 30, 2025 · 3.4 MB</div></div><span class="pill-tag pill-black">Complete</span><button class="btn-outline btn-sm" style="margin-left:8px;display:inline-flex;align-items:center;gap:5px" onclick="reportDownload()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button></div>
       </div>
     </div>
   </section>
@@ -1502,14 +1502,14 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
           <div class="price-desc">Perfect for getting started</div>
           <div><span class="pamt-val" data-m="0" data-a="0">$0</span><span style="font-size:14px;color:var(--t2)">/mo</span></div>
           <ul class="price-features"><li>5 analyses/month</li><li>Basic analytics</li><li>Standard support</li></ul>
-          <button class="btn-outline" style="width:100%;padding:12px">Get started</button>
+          <button class="btn-outline" style="width:100%;padding:12px" onclick="pricingClick('Starter')">Get started free</button>
         </div>
         <div class="price-card">
           <div class="price-plan">Pro</div>
           <div class="price-desc">For growing marketers</div>
           <div><span class="pamt-val" data-m="29" data-a="23" id="proP">$29</span><span style="font-size:14px;color:var(--t2)">/mo</span></div>
           <ul class="price-features"><li>50 analyses/month</li><li>Advanced analytics</li><li>Priority support</li><li>Export reports</li></ul>
-          <button class="btn-outline" style="width:100%;padding:12px">Get started</button>
+          <button class="btn-outline" style="width:100%;padding:12px" onclick="pricingClick('Pro')">Get started</button>
         </div>
         <div class="price-card featured">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
@@ -1519,14 +1519,14 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
           <div class="price-desc">For teams and agencies</div>
           <div><span class="pamt-val" data-m="79" data-a="63" id="bizP">$79</span><span style="font-size:14px;color:var(--t2)">/mo</span></div>
           <ul class="price-features"><li>200 analyses/month</li><li>AI advanced features</li><li>Team collaboration</li><li>White-label reports</li><li>SLA guarantee</li></ul>
-          <button class="btn-dark" style="width:100%;padding:12px;border-radius:980px">Get started</button>
+          <button class="btn-dark" style="width:100%;padding:12px;border-radius:980px" onclick="pricingClick('Business')">Get started</button>
         </div>
         <div class="price-card">
           <div class="price-plan">Enterprise</div>
           <div class="price-desc">For large organizations</div>
           <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">Custom</div>
           <ul class="price-features"><li>Unlimited analyses</li><li>Custom integrations</li><li>Dedicated support</li><li>SLA guarantee</li></ul>
-          <button class="btn-outline" style="width:100%;padding:12px">Contact sales</button>
+          <button class="btn-outline" style="width:100%;padding:12px" onclick="contactSales()">Contact sales</button>
         </div>
       </div>
     </div>
@@ -1537,15 +1537,15 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <div class="footer-inner">
       <p class="footer-disclaimer">InfluenceIQ is a creator-economy analytics suite. Forecasts are based on historical performance and aren't guaranteed. Mock data is shown on this preview page.</p>
       <div class="footer-grid">
-        <div class="footer-col"><div class="footer-col-title">Product</div><a onclick="scrollTo('home')">Overview</a><a onclick="scrollTo('analyze')">Analyze</a><a onclick="scrollTo('insights')">Insights</a><a onclick="scrollTo('campaigns')">Campaigns</a></div>
-        <div class="footer-col"><div class="footer-col-title">Resources</div><a>Docs</a><a>Guides</a><a>API</a><a>Status</a></div>
-        <div class="footer-col"><div class="footer-col-title">Company</div><a>About</a><a>Careers</a><a>Press</a><a>Contact</a></div>
-        <div class="footer-col"><div class="footer-col-title">Legal</div><a>Privacy</a><a>Terms</a><a>Cookies</a><a>Licenses</a></div>
-        <div class="footer-col"><div class="footer-col-title">Support</div><a>Help center</a><a>Community</a><a>Security</a><a>Refunds</a></div>
+        <div class="footer-col"><div class="footer-col-title">Product</div><a onclick="scrollTo('home')" style="cursor:pointer">Overview</a><a onclick="scrollTo('analyze')" style="cursor:pointer">Analyze</a><a onclick="scrollTo('insights')" style="cursor:pointer">Insights</a><a onclick="scrollTo('campaigns')" style="cursor:pointer">Campaigns</a></div>
+        <div class="footer-col"><div class="footer-col-title">Resources</div><a onclick="toast('Docs coming soon')" style="cursor:pointer">Docs</a><a onclick="toast('Guides coming soon')" style="cursor:pointer">Guides</a><a onclick="toast('API docs coming soon')" style="cursor:pointer">API</a><a onclick="toast('All systems operational ✓')" style="cursor:pointer">Status</a></div>
+        <div class="footer-col"><div class="footer-col-title">Company</div><a onclick="toast('About page coming soon')" style="cursor:pointer">About</a><a onclick="toast('No open positions yet')" style="cursor:pointer">Careers</a><a onclick="toast('Press kit coming soon')" style="cursor:pointer">Press</a><a onclick="contactSales()" style="cursor:pointer">Contact</a></div>
+        <div class="footer-col"><div class="footer-col-title">Legal</div><a onclick="showLegalModal('Privacy')" style="cursor:pointer">Privacy</a><a onclick="showLegalModal('Terms')" style="cursor:pointer">Terms</a><a onclick="toast('Cookies: we use only essential cookies')" style="cursor:pointer">Cookies</a><a onclick="toast('Open source licenses available on request')" style="cursor:pointer">Licenses</a></div>
+        <div class="footer-col"><div class="footer-col-title">Support</div><a onclick="toast('Help center coming soon')" style="cursor:pointer">Help center</a><a onclick="toast('Community forum coming soon')" style="cursor:pointer">Community</a><a onclick="toast('We take security seriously — report issues to security@influenceiq.app')" style="cursor:pointer">Security</a><a onclick="toast('Refund requests: billing@influenceiq.app')" style="cursor:pointer">Refunds</a></div>
       </div>
       <div class="footer-bottom">
         <span class="footer-copy">Copyright © 2025 InfluenceIQ Inc. All rights reserved.</span>
-        <div class="footer-legal"><a>Privacy</a><a>Terms</a><a>Sales &amp; refunds</a><a>Site map</a></div>
+        <div class="footer-legal"><a onclick="showLegalModal('Privacy')" style="cursor:pointer">Privacy</a><a onclick="showLegalModal('Terms')" style="cursor:pointer">Terms</a><a onclick="toast('Refund requests: billing@influenceiq.app')" style="cursor:pointer">Sales &amp; refunds</a><a onclick="scrollTo('home');toast('Navigated to top')" style="cursor:pointer">Site map</a></div>
       </div>
     </div>
   </footer>
@@ -1939,8 +1939,195 @@ document.addEventListener('DOMContentLoaded', () => {
 // Enter key submits auth form
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && document.getElementById('authOverlay').style.display === 'flex') submitAuth();
-  if (e.key === 'Escape') closeAuthModal();
+  if (e.key === 'Escape') { closeAuthModal(); closeLegalModal(); }
 });
+
+/* ── SEARCH ──────────────────────────────────────────────── */
+function openSearch() {
+  scrollTo('analyze');
+  setTimeout(() => {
+    const inp = document.getElementById('blogger-link');
+    if (inp) { inp.focus(); inp.select(); }
+  }, 450);
+}
+
+/* ── NOTIFICATIONS PANEL ─────────────────────────────────── */
+let _notifOpen = false;
+function toggleNotifPanel(e) {
+  e.stopPropagation();
+  let panel = document.getElementById('notifPanel');
+  if (panel) { panel.remove(); _notifOpen = false; return; }
+  _notifOpen = true;
+  panel = document.createElement('div');
+  panel.id = 'notifPanel';
+  panel.style.cssText = 'position:fixed;top:70px;right:20px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.13);min-width:280px;max-width:calc(100vw - 40px);z-index:9999;font-family:inherit';
+  panel.innerHTML = `
+    <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+      Notifications
+      <span style="font-size:11px;font-weight:500;color:var(--t3);cursor:pointer" onclick="document.getElementById('notifPanel').remove()">Mark all read</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;background:var(--bg-gray);border-radius:12px">
+        <div style="width:8px;height:8px;border-radius:50%;background:#0071e3;flex-shrink:0;margin-top:5px"></div>
+        <div><div style="font-size:13px;font-weight:600;color:var(--t1)">Analysis complete</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Your last influencer analysis is ready to view.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Just now</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:12px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--t3);flex-shrink:0;margin-top:5px"></div>
+        <div><div style="font-size:13px;font-weight:600;color:var(--t1)">Weekly digest ready</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Your Monday insights report has been generated.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">2 days ago</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:12px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--t3);flex-shrink:0;margin-top:5px"></div>
+        <div><div style="font-size:13px;font-weight:600;color:var(--t1)">Campaign updated</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Summer Sneaker Drop reached 68% completion.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">3 days ago</div></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(panel);
+  setTimeout(() => {
+    document.addEventListener('click', function rmPanel(ev) {
+      const p = document.getElementById('notifPanel');
+      if (p && !p.contains(ev.target)) { p.remove(); _notifOpen = false; }
+      document.removeEventListener('click', rmPanel);
+    });
+  }, 50);
+}
+
+/* ── NEW CAMPAIGN ────────────────────────────────────────── */
+function newCampaign() {
+  // Show inline modal
+  const existing = document.getElementById('campaignModal');
+  if (existing) { existing.remove(); return; }
+  const modal = document.createElement('div');
+  modal.id = 'campaignModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:22px;padding:28px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.2)" onclick="event.stopPropagation()">
+      <div style="font-size:20px;font-weight:800;letter-spacing:-.025em;margin-bottom:6px">New campaign</div>
+      <div style="font-size:14px;color:var(--t2);margin-bottom:22px">Create a new influencer campaign.</div>
+      <label class="lbl">Campaign name</label>
+      <input type="text" id="campNameInp" placeholder="e.g. Summer Launch 2025" style="width:100%;margin-bottom:14px;background:var(--bg-gray)">
+      <label class="lbl">Budget (USD)</label>
+      <input type="number" id="campBudgetInp" placeholder="5000" style="width:100%;margin-bottom:20px;background:var(--bg-gray)">
+      <div style="display:flex;gap:8px">
+        <button onclick="document.getElementById('campaignModal').remove()" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:transparent;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--t2)">Cancel</button>
+        <button onclick="submitNewCampaign()" style="flex:2;padding:12px;border-radius:12px;border:none;background:var(--t1);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Create campaign</button>
+      </div>
+    </div>
+  `;
+  modal.addEventListener('click', () => modal.remove());
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('campNameInp')?.focus(), 100);
+}
+
+function submitNewCampaign() {
+  const name = document.getElementById('campNameInp')?.value.trim();
+  const budget = document.getElementById('campBudgetInp')?.value;
+  if (!name) { toast('Enter a campaign name'); return; }
+  document.getElementById('campaignModal')?.remove();
+  // Prepend row to campaigns list
+  const card = document.querySelector('#page-campaigns .card');
+  if (card) {
+    const row = document.createElement('div');
+    row.className = 'camp-row sr on';
+    const budStr = budget ? '$' + Number(budget).toLocaleString() : '$0';
+    row.innerHTML = `
+      <div class="camp-header">
+        <div class="camp-av">${name[0].toUpperCase()}</div>
+        <div style="flex:1"><div class="camp-name">${name}</div><div class="camp-sub">0 influencers · Just now</div></div>
+        <div class="camp-stats">
+          <div><div class="camp-stat-label">Budget</div><div class="camp-stat-val">${budStr}</div></div>
+          <div><div class="camp-stat-label">ROI</div><div class="camp-stat-val">—</div></div>
+          <span class="pill-tag" style="background:rgba(0,0,0,.06);color:var(--t2)">Draft</span>
+        </div>
+      </div>
+      <div class="camp-progress"><div class="camp-progress-label"><span>Progress</span><span>0%</span></div><div class="pbar-track"><div class="pbar-fill" style="width:0%"></div></div></div>
+    `;
+    card.prepend(row);
+  }
+  toast('Campaign "' + name + '" created!');
+}
+
+/* ── GENERATE / DOWNLOAD REPORT ──────────────────────────── */
+function generateReport() {
+  if (window._lastForecastResult) {
+    if (typeof downloadReport === 'function') downloadReport();
+    else toast('Report ready — run an analysis first');
+  } else {
+    toast('Run an analysis first to generate a report');
+    setTimeout(() => scrollTo('analyze'), 700);
+  }
+}
+
+function reportDownload() {
+  if (window._lastForecastResult) {
+    if (typeof downloadReport === 'function') downloadReport();
+    else toast('Analysis result ready — use Download Report button after analysis');
+  } else {
+    toast('Run an analysis first, then download your report');
+    setTimeout(() => scrollTo('analyze'), 700);
+  }
+}
+
+/* ── PRICING ─────────────────────────────────────────────── */
+function pricingClick(plan) {
+  const token = localStorage.getItem('iq_token');
+  if (!token) {
+    openAuthModal();
+    toast('Sign in to get started with ' + plan);
+    return;
+  }
+  if (plan === 'Starter') {
+    toast("You're already on the Starter plan — it's free!");
+    return;
+  }
+  // Show upgrade modal
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:22px;padding:32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.2);text-align:center" onclick="event.stopPropagation()">
+      <div style="font-size:32px;margin-bottom:12px">🚀</div>
+      <div style="font-size:20px;font-weight:800;letter-spacing:-.025em;margin-bottom:8px">Upgrade to ${plan}</div>
+      <div style="font-size:14px;color:var(--t2);margin-bottom:24px">Payment processing is coming soon. We'll notify you when ${plan} plan is available!</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="width:100%;padding:13px;border-radius:12px;border:none;background:var(--t1);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Got it</button>
+      <div style="margin-top:12px"><a onclick="contactSales();this.closest('[style*=fixed]').remove()" style="font-size:13px;color:var(--blue);cursor:pointer">Contact sales for early access →</a></div>
+    </div>
+  `;
+  modal.addEventListener('click', () => modal.remove());
+  document.body.appendChild(modal);
+}
+
+/* ── CONTACT SALES ───────────────────────────────────────── */
+function contactSales() {
+  window.location.href = 'mailto:sales@influenceiq.app?subject=Enterprise%20Plan%20Inquiry&body=Hi%2C%20I%27m%20interested%20in%20learning%20more%20about%20InfluenceIQ%20Enterprise.';
+}
+
+/* ── LEGAL MODAL ─────────────────────────────────────────── */
+const _legalText = {
+  Privacy: `<b>Privacy Policy</b><br><br>InfluenceIQ collects only the data necessary to provide our service: your email, name, and analysis history. We do not sell your data to third parties.<br><br><b>Data stored:</b> Account info, analysis history, watchlist channels.<br><b>Third parties:</b> YouTube Data API (for channel stats), Railway (hosting).<br><b>Deletion:</b> Email privacy@influenceiq.app to delete your account and data.`,
+  Terms: `<b>Terms of Service</b><br><br>By using InfluenceIQ you agree to use the platform for lawful purposes only. Forecasts are AI-generated estimates and are not financial guarantees.<br><br><b>Permitted use:</b> Marketing analysis, influencer research, campaign planning.<br><b>Prohibited:</b> Automated scraping, reselling data, impersonating others.<br><b>Liability:</b> InfluenceIQ is not liable for business decisions made based on forecast data.`
+};
+
+function showLegalModal(type) {
+  closeLegalModal();
+  const modal = document.createElement('div');
+  modal.id = 'legalModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:22px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2)" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 24px 18px;border-bottom:1px solid var(--border)">
+        <div style="font-size:17px;font-weight:700">${type} Policy</div>
+        <button onclick="closeLegalModal()" style="width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.08);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--t2)">✕</button>
+      </div>
+      <div style="padding:22px 24px;font-size:14px;color:var(--t2);line-height:1.7">${_legalText[type]}</div>
+    </div>
+  `;
+  modal.addEventListener('click', closeLegalModal);
+  document.body.appendChild(modal);
+}
+
+function closeLegalModal() {
+  const m = document.getElementById('legalModal');
+  if (m) m.remove();
+}
 </script>
 
 <!-- ══ BACKEND API LOGIC ══════════════════════════════════ -->
