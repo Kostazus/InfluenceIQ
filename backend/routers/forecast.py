@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from backend.schemas.forecast import ForecastRequest, ForecastResponse
 from backend.calculator.engine import ForecastEngine
 from backend.storage.db import save_forecast
 from backend.services.auth import decode_token
+from backend.middleware.rate_limit import rate_limit
 
 router = APIRouter(prefix="/api", tags=["forecast"])
 engine = ForecastEngine()
+
+# 15 запросов в минуту с одного IP
+_forecast_limit = rate_limit(max_calls=15, window_seconds=60)
 
 
 def _user_id_from_request(request: Request) -> int | None:
@@ -21,7 +25,7 @@ def _user_id_from_request(request: Request) -> int | None:
     return None
 
 
-@router.post("/forecast", response_model=ForecastResponse)
+@router.post("/forecast", response_model=ForecastResponse, dependencies=[Depends(_forecast_limit)])
 async def forecast(req: ForecastRequest, request: Request):
     user_id = _user_id_from_request(request)
     result  = engine.calculate(req)

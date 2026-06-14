@@ -1,8 +1,12 @@
+import os
 import bcrypt
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-SECRET_KEY = "influenceiq-super-secret-key-2025"
+load_dotenv()
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "influenceiq-fallback-key-change-me")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 24
 
