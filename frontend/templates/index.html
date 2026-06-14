@@ -827,8 +827,15 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
     <li><a onclick="navScrollTo('campaigns')">Campaigns</a></li>
     <li><a onclick="navScrollTo('reports')">Reports</a></li>
     <li><a onclick="navScrollTo('settings')">Settings</a></li>
+    <li><a href="/history" style="display:flex;align-items:center;gap:5px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><polyline points="3 16 3 11 8 11"/></svg>
+      History
+    </a></li>
   </ul>
   <div class="nav-right">
+    <a href="/history" class="nav-btn nav-btn-desktop" title="История поисков" style="text-decoration:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><polyline points="3 16 3 11 8 11"/></svg>
+    </a>
     <button class="nav-btn nav-btn-desktop" title="Search" onclick="openSearch()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -845,7 +852,11 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
       <div id="userMenu" style="display:none;position:absolute;top:calc(var(--nav-h) + 6px);right:16px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.12);min-width:180px;z-index:300">
         <div id="userMenuName" style="font-size:13px;font-weight:600;padding:8px 12px;color:var(--t1)"></div>
         <div id="userMenuEmail" style="font-size:12px;color:var(--t3);padding:0 12px 8px;border-bottom:1px solid var(--border)"></div>
-        <button onclick="logout()" style="width:100%;text-align:left;padding:10px 12px;font-size:13px;font-weight:500;color:#c0392b;background:none;border:none;cursor:pointer;border-radius:8px;font-family:inherit;margin-top:4px" onmouseover="this.style.background='rgba(192,57,43,.06)'" onmouseout="this.style.background='none'">Sign out</button>
+        <a href="/history" style="display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;font-size:13px;font-weight:500;color:var(--t1);text-decoration:none;border-radius:8px;margin-top:4px" onmouseover="this.style.background='rgba(0,0,0,.04)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><polyline points="3 16 3 11 8 11"/></svg>
+          История поисков
+        </a>
+        <button onclick="logout()" style="width:100%;text-align:left;padding:10px 12px;font-size:13px;font-weight:500;color:#c0392b;background:none;border:none;cursor:pointer;border-radius:8px;font-family:inherit" onmouseover="this.style.background='rgba(192,57,43,.06)'" onmouseout="this.style.background='none'">Sign out</button>
       </div>
     </div>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" title="Menu">
@@ -861,6 +872,10 @@ footer { background: var(--bg-gray); padding: 48px 0 32px; }
   <a onclick="navScrollTo('insights');closeMobileNav()">Insights</a>
   <a onclick="navScrollTo('campaigns');closeMobileNav()">Campaigns</a>
   <a onclick="navScrollTo('reports');closeMobileNav()">Reports</a>
+  <a href="/history" onclick="closeMobileNav()" style="display:flex;align-items:center;gap:10px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><polyline points="3 16 3 11 8 11"/></svg>
+    История поисков
+  </a>
   <div style="height:1px;background:rgba(0,0,0,.07);margin:4px 16px"></div>
   <a onclick="openSettings();closeMobileNav()" style="display:flex;align-items:center;gap:10px">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>

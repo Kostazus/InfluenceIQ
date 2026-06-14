@@ -139,9 +139,13 @@ function renderResult(d, payload) {
         <p style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Analysis Results</p>
         <h3 style="font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--t1)">Completed just now</h3>
       </div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn-outline btn-sm" id="downloadReportBtn" onclick="downloadReport()">↓ Download Report</button>
         <button class="btn-outline btn-sm" onclick="navigator.clipboard?.writeText(location.href);showToast('Link copied!')">↗ Share</button>
+        <a href="/history" class="btn-outline btn-sm" style="text-decoration:none;display:flex;align-items:center;gap:5px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><polyline points="3 16 3 11 8 11"/></svg>
+          История
+        </a>
       </div>
     </div>
 
